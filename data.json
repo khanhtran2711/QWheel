@@ -1,0 +1,127 @@
+{
+  "title": "Revision Questions (CSS & JavaScript)",
+  "count": 30,
+  "questions": [
+    {
+      "id": 1,
+      "question": "Explain what does it mean <br> <code>display: flex;</code>"
+    },
+    {
+      "id": 2,
+      "question": "What is the purpose of <code>justify-content: space-evenly;</code>"
+    },
+    {
+      "id": 3,
+      "question": "<code>margin: 5px 0 10px 0;</code> <br>What does it mean?"
+    },
+    {
+      "id": 4,
+      "question": "<code>.card img {<br>      height: 200px;<br>    border: 1px solid #000;<br>    } </code> <br> <br>What does it mean?"
+    },
+    {
+      "id": 5,
+      "question": "<code>p{<br>  color:#999;<br> width: 550px;<br>    float:left;} <br>.clearfix{<br> overflow:auto;<br> } </code> <br>Why should we use the element with the class \"clearfix\" in this case?"
+    },
+    {
+      "id": 6,
+      "question": "<code>p{<br> column-count: 3; <br> column-gap:20px;<br> column-rule: 6px solid #1442e6e6;<br>}</code>"
+    },
+    {
+      "id": 7,
+      "question": "Explain the difference between <code>justify-content</code> and <code>align-items</code>"
+    },
+    {
+      "id": 8,
+      "question": "<code>.gallery{<br>  display: flex;<br>  flex-direction: column;<br>  justify-content: flex-start;<br>  gap: 20px;<br>  padding: 20px;<br>}</code> <br> find out which line is wrong? why?"
+    },
+    {
+      "id": 9,
+      "question": "<code>.grid-container > div{<br>                background-color: rgba(255, 255, 255, 0.8);<br>                text-align: center;<br>                padding: 20px 0;<br>                font-size: 30px; <br>            }</code> <br>What does it mean?"
+    },
+    {
+      "id": 10,
+      "question": "<code>.container{<br>    grid-template-areas: 'Header Header Header Header Header'<br>'Nav Main Main Main Aside'<br>'Footer Footer Footer Footer Footer';<br><br>grid-template-columns: 100px auto auto auto 200px;<br>grid-template-rows: 150px, auto, 120px;<br>}</code> <br>What does it mean?"
+    },
+    {
+      "id": 11,
+      "question": "<code>.grid-item5 {<br>grid-area: Footer;<br>}</code> do it for what?"
+    },
+    {
+      "id": 12,
+      "question": "explain:<br><code><label for=\"tEmail\" class=\"form-label\">Email:</label><br><input type=\"email\" name=\"email\" id=\"tEmail\" class=\"form-control\"></code>"
+    },
+    {
+      "id": 13,
+      "question": "This is a secret: Open css file for Contact form - week 5"
+    },
+    {
+      "id": 14,
+      "question": "This is a secret: Open css file for Contact form - week 5"
+    },
+    {
+      "id": 15,
+      "question": "This is a secret: Open html files - week 9"
+    },
+    {
+      "id": 16,
+      "question": null,
+      "note": "This is a secret: Open html files - week 9"
+    },
+    {
+      "id": 17,
+      "question": "How to get the data entered by a user or the default value of the form control, especially the input box?"
+    },
+    {
+      "id": 18,
+      "question": "<code>console.log(\"Hello World\");</code> <br>What does it mean?"
+    },
+    {
+      "id": 19,
+      "question": "How to execute a specific action (JavaScript function) when a button is clicked?"
+    },
+    {
+      "id": 20,
+      "question": "<code>let age = 20;<br>let hasID = false;<br><br>if (age >= 18) {<br>  if (hasID) {<br>    console.log(\"Entry allowed\");<br>  } else {<br>    console.log(\"ID required\");<br>  }<br>} else {<br>  console.log(\"Underage\");<br>}</code><br>What will this output?"
+    },
+    {
+      "id": 21,
+      "question": "<code>function drawFilledShape(sWidth, sHeight, x, y, colour) {<br>        ctx.beginPath();<br>        ctx.rect(x, y, sWidth, sHeight);<br>        ctx.fillStyle = colour;<br>        ctx.strokeStyle = black;<br>        ctx.fill();<br>        ctx.lineWidth = 5;<br>        ctx.stroke();<br>      }</code><br>What does it mean?"
+    },
+    {
+      "id": 22,
+      "question": "Why can <code>Math.ceil(Math.random()*10)</code> never return 0"
+    },
+    {
+      "id": 23,
+      "question": "What will the output?<br><code>let x = -2.3;<br>console.log(Math.ceil(x));</code>"
+    },
+    {
+      "id": 24,
+      "question": "<code>#' + Math.random().toString(16).substring(2, 8)</code>---What format is the final colour string?"
+    },
+    {
+      "id": 25,
+      "question": "Modify the code to draw 5 rows × 5 columns."
+    },
+    {
+      "id": 26,
+      "question": "Which part of the code determines spacing between circles in task 3 week9?"
+    },
+    {
+      "id": 27,
+      "question": "In the task 1 of week 9- How would you draw squares instead of circles?"
+    },
+    {
+      "id": 28,
+      "question": "Why are splatter dots much smaller than the main circle?"
+    },
+    {
+      "id": 29,
+      "question": "How many circles are drawn in this loop?<br><code>for (i = 0; i < 10; i+=2){<br>   drawFilledCircle(...)<br>}</code>"
+    },
+    {
+      "id": 30,
+      "question": "Which value runs last in i <= 10?<br><code>for (i = 0; i <= 10; i+=2){<br>   drawFilledCircle(...)<br>}</code>"
+    }
+  ]
+}
