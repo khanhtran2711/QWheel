@@ -48,7 +48,7 @@
     },
     {
       "id": 12,
-      "question": "explain:<br><code><label for=\"tEmail\" class=\"form-label\">Email:</label><br><input type=\"email\" name=\"email\" id=\"tEmail\" class=\"form-control\"></code>"
+      "question": "explain:<br><label for=\"tEmail\" class=\"form-label\">Email:</label><br><input type=\"email\" name=\"email\" id=\"tEmail\" class=\"form-control\">"
     },
     {
       "id": 13,
