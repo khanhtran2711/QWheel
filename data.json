@@ -27,11 +27,11 @@
       "question": "<code>p{<br> column-count: 3; <br> column-gap:20px;<br> column-rule: 6px solid #1442e6e6;<br>}</code>"
     },
     {
-      "id": 7,
+      "id": 8,
       "question": "Explain the difference between <code>justify-content</code> and <code>align-items</code>"
     },
     {
-      "id": 8,
+      "id": 7,
       "question": "<code>.gallery{<br>  display: flex;<br>  flex-direction: column;<br>  justify-content: flex-start;<br>  gap: 20px;<br>  padding: 20px;<br>}</code> <br> find out which line is wrong? why?"
     },
     {
@@ -47,7 +47,7 @@
       "question": "<code>.grid-item5 {<br>grid-area: Footer;<br>}</code> do it for what?"
     },
     {
-      "id": 12,
+      "id": 14,
       "question": "explain:<br>&lt;label for=\"tEmail\" class=\"form-label\"&gt;Email:&lt;/label&gt;<br>&lt;input type=\"email\" name=\"email\" id=\"tEmail\" class=\"form-control\"&gt;"
     },
     {
@@ -55,7 +55,7 @@
       "question": "This is a secret: Open css file for Contact form - week 5"
     },
     {
-      "id": 14,
+      "id": 12,
       "question": "This is a secret: Open css file for Contact form - week 5"
     },
     {
