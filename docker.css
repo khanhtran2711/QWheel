@@ -1,0 +1,271 @@
+:root {
+    --primary: #0f4c81;
+    --primary-light: #1a6bbf;
+    --accent: #00c9a7;
+    --accent-soft: #e0faf4;
+    --danger-soft: #fff0f0;
+    --bg-dark: #0d1b2a;
+    --bg-code: #111827;
+    --bg-sidebar: #f0f4f8;
+    --text-muted: #6b7a8d;
+    --border: #dde3ea;
+    --step-done: #00c9a7;
+    --step-active: #0f4c81;
+    --step-todo: #c9d0d9;
+    --radius: 10px;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: 'Sora', sans-serif;
+    background: #f7f9fb;
+    color: #1a2535;
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  /* ── TOP NAV ── */
+  .lab-nav {
+    background: var(--bg-dark);
+    border-bottom: 2px solid var(--accent);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  .lab-nav .brand {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: .02em;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .lab-nav .brand span.tag {
+    background: var(--accent);
+    color: #0d1b2a;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 7px;
+    letter-spacing: .05em;
+  }
+  .lab-nav .nav-link { color: #aec0d3 !important; font-size: 13px; }
+  .lab-nav .nav-link:hover { color: #fff !important; }
+  .lab-nav .nav-link.active { color: var(--accent) !important; }
+
+  /* ── HERO ── */
+  .lab-hero {
+    background: linear-gradient(135deg, #0d1b2a 60%, #0f4c81);
+    color: #fff;
+    padding: 3.5rem 2rem 3rem;
+    border-bottom: 3px solid var(--accent);
+  }
+  .lab-hero .badge-tag {
+    background: rgba(0,201,167,.15);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 20px;
+    padding: 3px 12px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .lab-hero h1 { font-size: 2rem; font-weight: 700; line-height: 1.2; }
+  .lab-hero p { color: #aec0d3; max-width: 640px; }
+  .lab-hero .meta-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px; color: #cbd8e8;
+    margin: 4px 4px 0 0;
+  }
+  .lab-hero .meta-pill i { color: var(--accent); }
+
+  /* ── SIDEBAR ── */
+  .lab-sidebar {
+    background: #fff;
+    border-right: 1px solid var(--border);
+    min-height: calc(100vh - 56px);
+    padding: 1.5rem 0;
+    position: sticky;
+    top: 56px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+  }
+  .sidebar-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--text-muted);
+    padding: 0 1.25rem;
+    margin: 1.2rem 0 .4rem;
+  }
+  .sidebar-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: .45rem 1.25rem;
+    font-size: 13px;
+    color: #344055;
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all .15s;
+  }
+  .sidebar-link:hover { background: #f0f4f8; color: var(--primary); border-left-color: #c9d0d9; }
+  .sidebar-link.active { background: #e8f0fb; color: var(--primary); border-left-color: var(--primary); font-weight: 600; }
+  .sidebar-link .step-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--step-todo);
+    color: #fff; font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .sidebar-link.active .step-dot { background: var(--step-active); }
+  .sidebar-link.done .step-dot { background: var(--step-done); }
+
+  /* ── MAIN CONTENT ── */
+  .lab-main { padding: 2rem 2.5rem 4rem; }
+
+  .step-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+  .step-header {
+    background: #f7f9fb;
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .step-num {
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700; font-size: 12px;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-title { font-weight: 600; font-size: 1rem; margin: 0; }
+  .step-body { padding: 1.5rem; }
+
+  /* ── CODE BLOCKS ── */
+  .code-wrap {
+    background: var(--bg-code);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: .75rem 0 1rem;
+  }
+  .code-header {
+    background: #1c2a3a;
+    padding: .45rem 1rem;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid #2a3c50;
+  }
+  .code-lang {
+    font-size: 11px; font-weight: 700;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase; letter-spacing: .08em;
+  }
+  .copy-btn {
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.12);
+    color: #8daec8;
+    font-size: 11px; border-radius: 5px;
+    padding: 2px 10px; cursor: pointer;
+    font-family: 'Sora', sans-serif;
+    transition: all .15s;
+  }
+  .copy-btn:hover { background: rgba(0,201,167,.15); color: var(--accent); }
+  .copy-btn.copied { color: var(--accent); border-color: var(--accent); }
+  pre {
+    margin: 0; padding: 1.1rem 1.25rem;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; line-height: 1.65;
+    color: #cdd9e5;
+  }
+  /* Syntax colors */
+  .kw { color: #f97583; }
+  .str { color: #9ecbff; }
+  .cmt { color: #586e75; font-style: italic; }
+  .fn  { color: #b392f0; }
+  .num { color: #f8c555; }
+  .tag-c { color: #79b8ff; }
+  .attr { color: #ffab70; }
+  .val { color: #9ecbff; }
+  .prop { color: #85e89d; }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-radius: 8px;
+    padding: .85rem 1.1rem;
+    margin: 1rem 0;
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 13.5px;
+  }
+  .callout i { margin-top: 2px; flex-shrink: 0; font-size: 15px; }
+  .callout-info  { background: #e8f3ff; border-left: 4px solid #1a6bbf; color: #0e3a6b; }
+  .callout-tip   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #054d3e; }
+  .callout-warn  { background: #fff8e5; border-left: 4px solid #f5a623; color: #6b4500; }
+  .callout-danger{ background: var(--danger-soft); border-left: 4px solid #e74c3c; color: #7b1a1a; }
+
+  /* ── FILE TREE ── */
+  .file-tree {
+    background: var(--bg-code);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #cdd9e5;
+    line-height: 1.9;
+  }
+  .file-tree .folder { color: #79b8ff; }
+  .file-tree .file   { color: #cdd9e5; }
+  .file-tree .highlight-file { color: var(--accent); font-weight: 600; }
+  .file-tree .indent1 { padding-left: 1.5rem; }
+  .file-tree .indent2 { padding-left: 3rem; }
+  .file-tree .indent3 { padding-left: 4.5rem; }
+
+  /* ── PROGRESS BAR ── */
+  .lab-progress { background: #e2e8f0; border-radius: 20px; height: 6px; margin-bottom: 2rem; overflow: hidden; }
+  .lab-progress-bar { background: linear-gradient(90deg, var(--primary), var(--accent)); height: 100%; border-radius: 20px; transition: width .5s; }
+
+  /* ── BADGES / CHIPS ── */
+  .tech-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    border: 1px solid var(--border);
+    background: #fff; border-radius: 20px;
+    font-size: 12px; font-weight: 500;
+    padding: 3px 12px; color: #344055;
+    margin: 3px;
+  }
+  .tech-badge i { font-size: 14px; }
+
+  /* ── SECTION HEADERS ── */
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--text-muted);
+    margin-bottom: .5rem;
+  }
+  h2.lab-section {
+    font-size: 1.4rem; font-weight: 700;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: .5rem; margin-bottom: 1.5rem;
+    color: var(--primary);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 991px) {
+    .lab-sidebar { display: none; }
+    .lab-main { padding: 1.5rem 1rem 3rem; }
+  }

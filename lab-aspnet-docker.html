@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASP.NET & Docker with PostgreSQL</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Sora:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="docker.css">
+</head>
+
+<body>
+
+  <!-- ── NAVBAR ── -->
+  <nav class="lab-nav d-flex align-items-center py-2">
+    <a href="#" class="brand me-4">
+      <i class="bi bi-cpu-fill" style="color:var(--accent)"></i>
+      Lab Tutorials
+      <span class="tag">BS5</span>
+    </a>
+    <ul class="nav ms-auto">
+      <li class="nav-item"><a class="nav-link active" href="#steps">Steps</a></li>
+      <li class="nav-item"><a class="nav-link" href="#structure">Structure</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="lab-hero">
+    <div class="alert alert-primary mb-0">
+      <strong>Bắt buộc:</strong> BẠN CẦN PHẢI CÓ DỰ ÁN MICROSERVICE ĐÃ PULL THÌ GITHUB VỀ, DỰ ÁN NÀY ĐÃ CHẠY THÀNH CÔNG
+      THÌ MỚI LÀM CÁC BƯỚC TIẾP THEO.
+    </div>
+  </section>
+
+  <!-- ── LAYOUT ── -->
+  <div class="container-fluid" style="max-width:1200px">
+    <div class="row g-0">
+
+      <!-- Sidebar -->
+      <div class="col-lg-3">
+        <div class="lab-sidebar">
+          <div class="sidebar-section-label">Setup</div>
+          <a href="#step1" class="sidebar-link active" onclick="setActive(this)">
+            <span class="step-dot">1</span> Install NuGet Package
+          </a>
+          <a href="#step2" class="sidebar-link" onclick="setActive(this)">
+            <span class="step-dot">2</span> Create docker-compose.yml
+          </a>
+
+          <div class="sidebar-section-label">Configuration</div>
+          <a href="#step3" class="sidebar-link" onclick="setActive(this)">
+            <span class="step-dot">3</span> Configure DbContext
+          </a>
+          <a href="#step4" class="sidebar-link" onclick="setActive(this)">
+            <span class="step-dot">4</span> Update appsettings.json
+          </a>
+
+          <div class="sidebar-section-label">Migrations</div>
+          <a href="#step5" class="sidebar-link" onclick="setActive(this)">
+            <span class="step-dot">5</span> Add EF Migration
+          </a>
+          <a href="#step6" class="sidebar-link" onclick="setActive(this)">
+            <span class="step-dot">6</span> Run &amp; Test
+          </a>
+
+          <div class="sidebar-section-label">Reference</div>
+          <a href="#structure" class="sidebar-link" onclick="setActive(this)">
+            <span class="step-dot" style="background:#8da5c0;font-size:14px">&#128196;</span> Project Structure
+          </a>
+        </div>
+      </div>
+
+      <!-- Main -->
+      <div class="col-lg-9">
+        <div class="lab-main" id="steps">
+          <!-- 1. cài postgre -->
+          <div class="step-card" id="step1">
+            <div class="step-header">
+              <div class="step-num">1</div>
+              <div>
+                <p class="step-title">Cài đặt package postgresql trong dự án ASP.NET</p>
+              </div>
+            </div>
+            <div class="step-body">
+              <p>Mở <strong>Package Manager Console</strong>để cài package này cho tất cả các dịch vụ gồm:
+                <code>StudentService</code>, <code>TeacherService</code>.
+              </p>
+
+              <p>Các bạn sẽ thay đổi dịch vụ tại <strong>Default project</strong>. Giả sử: Default project đang là
+                <code>StudentService</code> thì nó sẽ cài package này cho <code>StudentService</code> mà thôi.
+              </p>
+
+              <p>Trong lệnh dưới: <code>x.x.x</code> là phiên bản cần cài. Các bạn phải check xem
+                <strong>EntityFrameworkCore</strong> mà bạn đang sử dụng là version nào thì sẽ dùng tương ứng với x đầu
+                tiên.
+              </p>
+              <p>Ví dụ: <strong>EntityFrameworkCore</strong> là <code>8.0.25</code> thì <code>x.x.x</code> sẽ là
+                <code>8.0.0</code>.
+                <code>AspNetCoreMicroservicesDemo</code> and two services such as <code>StudentService</code> and
+                <code>TeacherService</code>.
+              </p>
+              <p class="small text-muted">Example (EF Core 8):</p>
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">Example</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><span class="kw">Install-Package</span> Npgsql.EntityFrameworkCore.PostgreSQL <span class="attr">-Version</span> <span class="num">8.0.0</span></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Cập nhật Connection String in appsettings.json -->
+
+          <div class="step-card" id="step2">
+            <div class="step-header">
+              <div class="step-num">2</div>
+              <div>
+                <p class="step-title">Cập nhật Connection String in <code>appsettings.json</code></p>
+              </div>
+            </div>
+            <div class="step-body">
+              <p>Cần phải cập nhật tất cả <code>appsettings.json</code> cho <code>StudentService</code>,
+                <code>TeacherService</code>.
+              </p>
+
+              <p>Lấy ví dụ với <code>StudentService</code>, trong ConnectionString, thay thế giá trị của
+                “DefaultConnection”.</p>
+
+              <p>Từ thuộc tính <code>ConnectionString</code> này:</p>
+              </p>
+              <p class="small text-muted">Example (trong StudentService/appsetting.json):</p>
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">JSON — appsettings.json (local dev)</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre>{
+  <span class="prop">"ConnectionStrings"</span>: {
+    <span class="prop">"DefaultConnection"</span>: <span class="str">"Host=localhost;Port=5432;Database=microservicesdb;Username=postgres;Password=postgres"</span>
+  },
+  <span class="prop">"Logging"</span>: {
+    <span class="prop">"LogLevel"</span>: {
+      <span class="prop">"Default"</span>: <span class="str">"Information"</span>,
+      <span class="prop">"Microsoft.AspNetCore"</span>: <span class="str">"Warning"</span>
+    }
+  },
+  <span class="prop">"AllowedHosts"</span>: <span class="str">"*"</span>
+}</pre>
+              </div>
+            </div>
+          </div>
+          <!-- ─────────── STEP 1 ─────────── -->
+          <div class="step-card" id="step1">
+            <div class="step-header">
+              <div class="step-num">1</div>
+              <div>
+                <p class="step-title">Install the Npgsql.EntityFrameworkCore.PostgreSQL Package</p>
+                <small class="text-muted">Via Package Manager Console in Visual Studio</small>
+              </div>
+              <input type="checkbox" class="form-check-input ms-auto step-check"
+                style="width:20px;height:20px;cursor:pointer" title="Mark complete" onchange="updateProgress()" />
+            </div>
+            <div class="step-body">
+
+              <div class="callout callout-info">
+                <i class="bi bi-info-circle-fill"></i>
+                <div>You need to install this package for <strong>each</strong> service — <code>StudentService</code>
+                  and <code>TeacherService</code>. Repeat the command by switching the <em>Default project</em> in the
+                  Package Manager Console.</div>
+              </div>
+
+              <h6 class="fw-semibold mt-3 mb-1">1a. Open Package Manager Console</h6>
+              <p class="text-muted small mb-2">In Visual Studio: <strong>Tools → NuGet Package Manager → Package Manager
+                  Console</strong></p>
+
+              <h6 class="fw-semibold mt-3 mb-1">1b. Select the target project</h6>
+              <p class="small mb-1">In the <strong>Default project</strong> dropdown (top of the console), choose
+                <code>StudentService</code> first:
+              </p>
+
+              <h6 class="fw-semibold mt-3 mb-1">1c. Run the install command</h6>
+              <div class="callout callout-warn mb-2">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <div>Replace <code>x.x.x</code> with the correct version. The <strong>first digit must match your EF
+                    Core version</strong>. Example: EF Core <code>8.0.25</code> → use <code>8.0.0</code>.</div>
+              </div>
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">Package Manager Console</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><span class="kw">Install-Package</span> Npgsql.EntityFrameworkCore.PostgreSQL <span class="attr">-Version</span> <span class="num">x.x.x</span></pre>
+              </div>
+              <p class="small text-muted">Example (EF Core 8):</p>
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">Example</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><span class="kw">Install-Package</span> Npgsql.EntityFrameworkCore.PostgreSQL <span class="attr">-Version</span> <span class="num">8.0.0</span></pre>
+              </div>
+
+              <h6 class="fw-semibold mt-3 mb-1">1d. Repeat for TeacherService</h6>
+              <p class="small">Change the <strong>Default project</strong> to <code>TeacherService</code> and run the
+                same command again.</p>
+
+              <div class="callout callout-tip mt-3">
+                <i class="bi bi-lightbulb-fill"></i>
+                <div>Check your current EF Core version in <code>.csproj</code>: look for
+                  <code>Microsoft.EntityFrameworkCore</code> package version to determine the correct first digit.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─────────── STEP 2 ─────────── -->
+          <div class="step-card" id="step2">
+            <div class="step-header">
+              <div class="step-num">2</div>
+              <div>
+                <p class="step-title">Create the <code>docker-compose.yml</code> File</p>
+                <small class="text-muted">In the root of your cloned repository</small>
+              </div>
+              <input type="checkbox" class="form-check-input ms-auto step-check"
+                style="width:20px;height:20px;cursor:pointer" title="Mark complete" onchange="updateProgress()" />
+            </div>
+            <div class="step-body">
+
+              <p>Create <code>docker-compose.yml</code> in the <code>AspNetCoreMicroservicesDemo</code> folder (the root
+                folder you pulled from GitHub).</p>
+
+              <div class="callout callout-info">
+                <i class="bi bi-folder-fill"></i>
+                <div>File location: <code>AspNetCoreMicroservicesDemo/docker-compose.yml</code></div>
+              </div>
+
+              <h6 class="fw-semibold mt-3 mb-1">docker-compose.yml</h6>
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">YAML</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><span class="prop">version</span><span class="kw">:</span> <span class="str">'3.8'</span>
+
+<span class="prop">services</span><span class="kw">:</span>
+
+  <span class="prop">postgres</span><span class="kw">:</span>
+    <span class="prop">image</span><span class="kw">:</span> postgres<span class="kw">:</span><span class="num">16</span>
+    <span class="prop">container_name</span><span class="kw">:</span> microservices-postgres
+    <span class="prop">restart</span><span class="kw">:</span> always
+    <span class="prop">environment</span><span class="kw">:</span>
+      <span class="prop">POSTGRES_USER</span><span class="kw">:</span> postgres
+      <span class="prop">POSTGRES_PASSWORD</span><span class="kw">:</span> postgres
+      <span class="prop">POSTGRES_DB</span><span class="kw">:</span> microservicesdb
+    <span class="prop">ports</span><span class="kw">:</span>
+      <span class="kw">-</span> <span class="str">"5432:5432"</span>
+    <span class="prop">volumes</span><span class="kw">:</span>
+      <span class="kw">-</span> postgres_data<span class="kw">:</span>/var/lib/postgresql/data
+
+  <span class="prop">studentservice</span><span class="kw">:</span>
+    <span class="prop">build</span><span class="kw">:</span>
+      <span class="prop">context</span><span class="kw">:</span> .
+      <span class="prop">dockerfile</span><span class="kw">:</span> StudentService/Dockerfile
+    <span class="prop">container_name</span><span class="kw">:</span> student-service
+    <span class="prop">ports</span><span class="kw">:</span>
+      <span class="kw">-</span> <span class="str">"5001:80"</span>
+    <span class="prop">environment</span><span class="kw">:</span>
+      <span class="prop">ConnectionStrings__DefaultConnection</span><span class="kw">:</span> <span class="str">"Host=postgres;Port=5432;Database=microservicesdb;Username=postgres;Password=postgres"</span>
+    <span class="prop">depends_on</span><span class="kw">:</span>
+      <span class="kw">-</span> postgres
+
+  <span class="prop">teacherservice</span><span class="kw">:</span>
+    <span class="prop">build</span><span class="kw">:</span>
+      <span class="prop">context</span><span class="kw">:</span> .
+      <span class="prop">dockerfile</span><span class="kw">:</span> TeacherService/Dockerfile
+    <span class="prop">container_name</span><span class="kw">:</span> teacher-service
+    <span class="prop">ports</span><span class="kw">:</span>
+      <span class="kw">-</span> <span class="str">"5002:80"</span>
+    <span class="prop">environment</span><span class="kw">:</span>
+      <span class="prop">ConnectionStrings__DefaultConnection</span><span class="kw">:</span> <span class="str">"Host=postgres;Port=5432;Database=microservicesdb;Username=postgres;Password=postgres"</span>
+    <span class="prop">depends_on</span><span class="kw">:</span>
+      <span class="kw">-</span> postgres
+
+<span class="prop">volumes</span><span class="kw">:</span>
+  <span class="prop">postgres_data</span><span class="kw">:</span></pre>
+              </div>
+
+              <div class="callout callout-tip">
+                <i class="bi bi-lightbulb-fill"></i>
+                <div>The <code>depends_on</code> key ensures PostgreSQL starts before your services. The hostname
+                  <code>postgres</code> inside the connection string refers to the Docker service name, not
+                  <code>localhost</code>.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─────────── STEP 3 ─────────── -->
+          <div class="step-card" id="step3">
+            <div class="step-header">
+              <div class="step-num">3</div>
+              <div>
+                <p class="step-title">Configure <code>DbContext</code> to Use PostgreSQL</p>
+                <small class="text-muted">In Program.cs of each service</small>
+              </div>
+              <input type="checkbox" class="form-check-input ms-auto step-check"
+                style="width:20px;height:20px;cursor:pointer" title="Mark complete" onchange="updateProgress()" />
+            </div>
+            <div class="step-body">
+
+              <p>Open <code>Program.cs</code> in both <code>StudentService</code> and <code>TeacherService</code>.
+                Replace the <code>UseSqlServer</code> (or in-memory) call with <code>UseNpgsql</code>:</p>
+
+              <h6 class="fw-semibold mt-3 mb-1">Program.cs — StudentService</h6>
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">C#</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><span class="kw">var</span> builder = WebApplication.CreateBuilder(args);
+
+<span class="cmt">// Add PostgreSQL via Npgsql</span>
+builder.Services.<span class="fn">AddDbContext</span>&lt;<span class="tag-c">StudentDbContext</span>&gt;(options =&gt;
+    options.<span class="fn">UseNpgsql</span>(
+        builder.Configuration.<span class="fn">GetConnectionString</span>(<span class="str">"DefaultConnection"</span>)
+    )
+);
+
+builder.Services.<span class="fn">AddControllers</span>();
+builder.Services.<span class="fn">AddEndpointsApiExplorer</span>();
+builder.Services.<span class="fn">AddSwaggerGen</span>();
+
+<span class="kw">var</span> app = builder.<span class="fn">Build</span>();
+
+<span class="kw">if</span> (app.Environment.<span class="fn">IsDevelopment</span>())
+{
+    app.<span class="fn">UseSwagger</span>();
+    app.<span class="fn">UseSwaggerUI</span>();
+}
+
+app.<span class="fn">UseAuthorization</span>();
+app.<span class="fn">MapControllers</span>();
+app.<span class="fn">Run</span>();</pre>
+              </div>
+
+              <div class="callout callout-warn mt-2">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <div>Make sure you have <code>using Microsoft.EntityFrameworkCore;</code> at the top of
+                  <code>Program.cs</code>, otherwise <code>UseNpgsql</code> will not be recognized.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─────────── STEP 4 ─────────── -->
+          <div class="step-card" id="step4">
+            <div class="step-header">
+              <div class="step-num">4</div>
+              <div>
+                <p class="step-title">Update <code>appsettings.json</code></p>
+                <small class="text-muted">Connection string for local development</small>
+              </div>
+              <input type="checkbox" class="form-check-input ms-auto step-check"
+                style="width:20px;height:20px;cursor:pointer" title="Mark complete" onchange="updateProgress()" />
+            </div>
+            <div class="step-body">
+
+              <p>Add a <code>DefaultConnection</code> entry to both services' <code>appsettings.json</code>. For local
+                development (without Docker), point to <code>localhost</code>:</p>
+
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">JSON — appsettings.json (local dev)</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre>{
+  <span class="prop">"ConnectionStrings"</span>: {
+    <span class="prop">"DefaultConnection"</span>: <span class="str">"Host=localhost;Port=5432;Database=microservicesdb;Username=postgres;Password=postgres"</span>
+  },
+  <span class="prop">"Logging"</span>: {
+    <span class="prop">"LogLevel"</span>: {
+      <span class="prop">"Default"</span>: <span class="str">"Information"</span>,
+      <span class="prop">"Microsoft.AspNetCore"</span>: <span class="str">"Warning"</span>
+    }
+  },
+  <span class="prop">"AllowedHosts"</span>: <span class="str">"*"</span>
+}</pre>
+              </div>
+
+              <div class="callout callout-info mt-2">
+                <i class="bi bi-info-circle-fill"></i>
+                <div>When running via <code>docker-compose</code>, the environment variable
+                  <code>ConnectionStrings__DefaultConnection</code> defined in <code>docker-compose.yml</code>
+                  automatically overrides this value.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─────────── STEP 5 ─────────── -->
+          <div class="step-card" id="step5">
+            <div class="step-header">
+              <div class="step-num">5</div>
+              <div>
+                <p class="step-title">Add Entity Framework Core Migration</p>
+                <small class="text-muted">Generate and apply database schema</small>
+              </div>
+              <input type="checkbox" class="form-check-input ms-auto step-check"
+                style="width:20px;height:20px;cursor:pointer" title="Mark complete" onchange="updateProgress()" />
+            </div>
+            <div class="step-body">
+
+              <h6 class="fw-semibold mb-1">5a. Add the initial migration</h6>
+              <p class="small">In Package Manager Console, set the <strong>Default project</strong> to
+                <code>StudentService</code>, then run:
+              </p>
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">Package Manager Console</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><span class="kw">Add-Migration</span> InitialCreate</pre>
+              </div>
+
+              <h6 class="fw-semibold mt-3 mb-1">5b. Update the database</h6>
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">Package Manager Console</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><span class="kw">Update-Database</span></pre>
+              </div>
+
+              <p class="small mt-2">Repeat for <code>TeacherService</code> by switching the Default project.</p>
+
+              <div class="callout callout-tip mt-2">
+                <i class="bi bi-lightbulb-fill"></i>
+                <div>You can also use the .NET CLI: <code>dotnet ef migrations add InitialCreate</code> and
+                  <code>dotnet ef database update</code> from inside each service folder.
+                </div>
+              </div>
+
+              <h6 class="fw-semibold mt-3 mb-1">5c. (Optional) Auto-apply migrations on startup</h6>
+              <p class="small">Add to <code>Program.cs</code> to automatically apply pending migrations when the app
+                starts in Docker:</p>
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">C#</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><span class="cmt">// Auto-apply migrations on startup (useful for Docker)</span>
+<span class="kw">using</span> (<span class="kw">var</span> scope = app.Services.<span class="fn">CreateScope</span>())
+{
+    <span class="kw">var</span> db = scope.ServiceProvider.<span class="fn">GetRequiredService</span>&lt;<span class="tag-c">StudentDbContext</span>&gt;();
+    db.Database.<span class="fn">Migrate</span>();
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─────────── STEP 6 ─────────── -->
+          <div class="step-card" id="step6">
+            <div class="step-header">
+              <div class="step-num">6</div>
+              <div>
+                <p class="step-title">Run Docker Compose &amp; Test</p>
+                <small class="text-muted">Start all services and verify the setup</small>
+              </div>
+              <input type="checkbox" class="form-check-input ms-auto step-check"
+                style="width:20px;height:20px;cursor:pointer" title="Mark complete" onchange="updateProgress()" />
+            </div>
+            <div class="step-body">
+
+              <h6 class="fw-semibold mb-1">6a. Build and start all containers</h6>
+              <p class="small">Navigate to the <code>AspNetCoreMicroservicesDemo</code> folder in terminal:</p>
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">Terminal / PowerShell</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre>cd AspNetCoreMicroservicesDemo
+docker-compose up --build</pre>
+              </div>
+
+              <h6 class="fw-semibold mt-3 mb-1">6b. Verify services are running</h6>
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">Terminal</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre>docker-compose ps</pre>
+              </div>
+
+              <h6 class="fw-semibold mt-3 mb-1">6c. Test the API endpoints</h6>
+              <div class="row g-2 mt-1">
+                <div class="col-md-6">
+                  <div class="p-3 rounded border" style="background:#f7f9fb">
+                    <div class="section-label mb-1" style="color:var(--primary)">Student Service</div>
+                    <code class="small">http://localhost:5001/swagger</code>
+                    <br />
+                    <code class="small">http://localhost:5001/api/students</code>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 rounded border" style="background:#f7f9fb">
+                    <div class="section-label mb-1" style="color:var(--primary)">Teacher Service</div>
+                    <code class="small">http://localhost:5002/swagger</code>
+                    <br />
+                    <code class="small">http://localhost:5002/api/teachers</code>
+                  </div>
+                </div>
+              </div>
+
+              <h6 class="fw-semibold mt-3 mb-1">6d. Stop containers</h6>
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">Terminal</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre>docker-compose down</pre>
+              </div>
+
+              <div class="callout callout-danger mt-3">
+                <i class="bi bi-exclamation-octagon-fill"></i>
+                <div>Use <code>docker-compose down -v</code> to also <strong>remove volumes</strong> (wipes the
+                  PostgreSQL data). Only do this if you want a clean slate.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─────────── STRUCTURE ─────────── -->
+          <h2 class="lab-section mt-4" id="structure">Project Source Code Structure</h2>
+
+          <div class="step-card">
+            <div class="step-body">
+              <p class="small text-muted mb-3">Expected folder layout after completing this lab. Highlighted files are
+                created or modified in this lab.</p>
+              <div class="file-tree">
+                <div><span class="folder">📁 AspNetCoreMicroservicesDemo/</span></div>
+                <div class="indent1"><span class="highlight-file">📄 docker-compose.yml</span> <span class="cmt"
+                    style="font-size:11px">← created in Step 2</span></div>
+                <div class="indent1"><span class="folder">📁 StudentService/</span></div>
+                <div class="indent2"><span class="folder">📁 Controllers/</span></div>
+                <div class="indent3"><span class="file">📄 StudentsController.cs</span></div>
+                <div class="indent2"><span class="folder">📁 Data/</span></div>
+                <div class="indent3"><span class="file">📄 StudentDbContext.cs</span></div>
+                <div class="indent2"><span class="folder">📁 Migrations/</span> <span class="cmt"
+                    style="font-size:11px">← generated in Step 5</span></div>
+                <div class="indent3"><span class="highlight-file">📄 XXXXXX_InitialCreate.cs</span></div>
+                <div class="indent3"><span class="highlight-file">📄 StudentDbContextModelSnapshot.cs</span></div>
+                <div class="indent2"><span class="folder">📁 Models/</span></div>
+                <div class="indent3"><span class="file">📄 Student.cs</span></div>
+                <div class="indent2"><span class="highlight-file">📄 appsettings.json</span> <span class="cmt"
+                    style="font-size:11px">← modified in Step 4</span></div>
+                <div class="indent2"><span class="highlight-file">📄 Program.cs</span> <span class="cmt"
+                    style="font-size:11px">← modified in Step 3</span></div>
+                <div class="indent2"><span class="file">📄 StudentService.csproj</span></div>
+                <div class="indent2"><span class="highlight-file">📄 Dockerfile</span></div>
+
+                <div class="indent1 mt-2"><span class="folder">📁 TeacherService/</span></div>
+                <div class="indent2"><span class="folder">📁 Controllers/</span></div>
+                <div class="indent3"><span class="file">📄 TeachersController.cs</span></div>
+                <div class="indent2"><span class="folder">📁 Data/</span></div>
+                <div class="indent3"><span class="file">📄 TeacherDbContext.cs</span></div>
+                <div class="indent2"><span class="folder">📁 Migrations/</span> <span class="cmt"
+                    style="font-size:11px">← generated in Step 5</span></div>
+                <div class="indent3"><span class="highlight-file">📄 XXXXXX_InitialCreate.cs</span></div>
+                <div class="indent2"><span class="folder">📁 Models/</span></div>
+                <div class="indent3"><span class="file">📄 Teacher.cs</span></div>
+                <div class="indent2"><span class="highlight-file">📄 appsettings.json</span></div>
+                <div class="indent2"><span class="highlight-file">📄 Program.cs</span></div>
+                <div class="indent2"><span class="file">📄 TeacherService.csproj</span></div>
+                <div class="indent2"><span class="highlight-file">📄 Dockerfile</span></div>
+
+                <div class="indent1 mt-2"><span class="file">📄 AspNetCoreMicroservicesDemo.sln</span></div>
+              </div>
+
+              <h6 class="fw-semibold mt-4 mb-2">Sample Dockerfile (for each service)</h6>
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">Dockerfile</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><span class="tag-c">FROM</span> mcr.microsoft.com/dotnet/aspnet:<span class="num">8.0</span> <span class="kw">AS</span> base
+<span class="tag-c">WORKDIR</span> /app
+<span class="tag-c">EXPOSE</span> <span class="num">80</span>
+
+<span class="tag-c">FROM</span> mcr.microsoft.com/dotnet/sdk:<span class="num">8.0</span> <span class="kw">AS</span> build
+<span class="tag-c">WORKDIR</span> /src
+<span class="tag-c">COPY</span> [<span class="str">"StudentService/StudentService.csproj"</span>, <span class="str">"StudentService/"</span>]
+<span class="tag-c">RUN</span> dotnet restore <span class="str">"StudentService/StudentService.csproj"</span>
+<span class="tag-c">COPY</span> . .
+<span class="tag-c">WORKDIR</span> <span class="str">"/src/StudentService"</span>
+<span class="tag-c">RUN</span> dotnet build <span class="str">"StudentService.csproj"</span> -c Release -o /app/build
+
+<span class="tag-c">FROM</span> build <span class="kw">AS</span> publish
+<span class="tag-c">RUN</span> dotnet publish <span class="str">"StudentService.csproj"</span> -c Release -o /app/publish
+
+<span class="tag-c">FROM</span> base <span class="kw">AS</span> final
+<span class="tag-c">WORKDIR</span> /app
+<span class="tag-c">COPY</span> --from=publish /app/publish .
+<span class="tag-c">ENTRYPOINT</span> [<span class="str">"dotnet"</span>, <span class="str">"StudentService.dll"</span>]</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─────────── SUMMARY ─────────── -->
+          <div class="p-4 rounded-3 mt-2 mb-4"
+            style="background:linear-gradient(135deg,#e8f0fb,#e0faf4);border:1px solid #c0d8f0">
+            <h5 class="fw-bold mb-2" style="color:var(--primary)"><i class="bi bi-check-circle-fill me-2"
+                style="color:var(--accent)"></i>Lab Summary</h5>
+            <p class="mb-2 small">In this lab you:</p>
+            <ul class="small mb-0" style="color:#1a2535">
+              <li>Installed <strong>Npgsql.EntityFrameworkCore.PostgreSQL</strong> for both microservices.</li>
+              <li>Created a <strong>docker-compose.yml</strong> orchestrating PostgreSQL + two ASP.NET services.</li>
+              <li>Configured <strong>DbContext</strong> to use <code>UseNpgsql()</code> with connection strings.</li>
+              <li>Updated <strong>appsettings.json</strong> and ran EF Core migrations.</li>
+              <li>Built and tested the full stack via <code>docker-compose up --build</code>.</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function copyCode(btn) {
+      const pre = btn.closest('.code-wrap').querySelector('pre');
+      const text = pre.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+      });
+    }
+
+    function setActive(el) {
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function updateProgress() {
+      const checks = document.querySelectorAll('.step-check');
+      const done = [...checks].filter(c => c.checked).length;
+      const pct = Math.round((done / checks.length) * 100);
+      document.getElementById('progress-bar').style.width = pct + '%';
+      document.getElementById('progress-text').textContent = done + ' / ' + checks.length + ' steps';
+      checks.forEach((c, i) => {
+        const card = c.closest('.step-card');
+        if (!card) return;
+        const id = card.id;
+        const link = document.querySelector(`.sidebar-link[href="#${id}"]`);
+        if (!link) return;
+        if (c.checked) link.classList.add('done');
+        else link.classList.remove('done');
+      });
+    }
+
+    // Smooth scroll highlight
+    document.querySelectorAll('.sidebar-link[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASP.NET & Docker with PostgreSQL</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Sora:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="docker.css">
+</head>
+
+<body>
+
+  <!-- ── NAVBAR ── -->
+  <nav class="lab-nav d-flex align-items-center py-2">
+    <a href="#" class="brand me-4">
+      <i class="bi bi-cpu-fill" style="color:var(--accent)"></i>
+      Lab Tutorials
+      <span class="tag">BS5</span>
+    </a>
+    <ul class="nav ms-auto">
+      <li class="nav-item"><a class="nav-link active" href="#steps">Steps</a></li>
+      <li class="nav-item"><a class="nav-link" href="#structure">Structure</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="lab-hero">
+    <div class="alert alert-primary mb-0">
+      <strong>Bắt buộc:</strong> BẠN CẦN PHẢI CÓ DỰ ÁN MICROSERVICE ĐÃ PULL THÌ GITHUB VỀ, DỰ ÁN NÀY ĐÃ CHẠY THÀNH CÔNG
+      THÌ MỚI LÀM CÁC BƯỚC TIẾP THEO.
+    </div>
+  </section>
+
+  <!-- ── LAYOUT ── -->
+  <div class="container-fluid" style="max-width:1200px">
+    <div class="row g-0">
+
+      <!-- Sidebar -->
+      <div class="col-lg-3">
+        <div class="lab-sidebar">
+          <div class="sidebar-section-label">Setup</div>
+          <a href="#step1" class="sidebar-link active" onclick="setActive(this)">
+            <span class="step-dot">1</span> Install NuGet Package
+          </a>
+          <a href="#step2" class="sidebar-link" onclick="setActive(this)">
+            <span class="step-dot">2</span> Create docker-compose.yml
+          </a>
+
+          <div class="sidebar-section-label">Configuration</div>
+          <a href="#step3" class="sidebar-link" onclick="setActive(this)">
+            <span class="step-dot">3</span> Configure DbContext
+          </a>
+          <a href="#step4" class="sidebar-link" onclick="setActive(this)">
+            <span class="step-dot">4</span> Update appsettings.json
+          </a>
+
+          <div class="sidebar-section-label">Migrations</div>
+          <a href="#step5" class="sidebar-link" onclick="setActive(this)">
+            <span class="step-dot">5</span> Add EF Migration
+          </a>
+          <a href="#step6" class="sidebar-link" onclick="setActive(this)">
+            <span class="step-dot">6</span> Run &amp; Test
+          </a>
+
+          <div class="sidebar-section-label">Reference</div>
+          <a href="#structure" class="sidebar-link" onclick="setActive(this)">
+            <span class="step-dot" style="background:#8da5c0;font-size:14px">&#128196;</span> Project Structure
+          </a>
+        </div>
+      </div>
+
+      <!-- Main -->
+      <div class="col-lg-9">
+        <div class="lab-main" id="steps">
+          <!-- 1. cài postgre -->
+          <div class="step-card" id="step1">
+            <div class="step-header">
+              <div class="step-num">1</div>
+              <div>
+                <p class="step-title">Cài đặt package postgresql trong dự án ASP.NET</p>
+              </div>
+            </div>
+            <div class="step-body">
+              <p>Mở <strong>Package Manager Console</strong>để cài package này cho tất cả các dịch vụ gồm:
+                <code>StudentService</code>, <code>TeacherService</code>.
+              </p>
+
+              <p>Các bạn sẽ thay đổi dịch vụ tại <strong>Default project</strong>. Giả sử: Default project đang là
+                <code>StudentService</code> thì nó sẽ cài package này cho <code>StudentService</code> mà thôi.
+              </p>
+
+              <p>Trong lệnh dưới: <code>x.x.x</code> là phiên bản cần cài. Các bạn phải check xem
+                <strong>EntityFrameworkCore</strong> mà bạn đang sử dụng là version nào thì sẽ dùng tương ứng với x đầu
+                tiên.
+              </p>
+              <p>Ví dụ: <strong>EntityFrameworkCore</strong> là <code>8.0.25</code> thì <code>x.x.x</code> sẽ là
+                <code>8.0.0</code>.
+                <code>AspNetCoreMicroservicesDemo</code> and two services such as <code>StudentService</code> and
+                <code>TeacherService</code>.
+              </p>
+              <p class="small text-muted">Example (EF Core 8):</p>
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">Example</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><span class="kw">Install-Package</span> Npgsql.EntityFrameworkCore.PostgreSQL <span class="attr">-Version</span> <span class="num">8.0.0</span></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Cập nhật Connection String in appsettings.json -->
+
+          <div class="step-card" id="step2">
+            <div class="step-header">
+              <div class="step-num">2</div>
+              <div>
+                <p class="step-title">Update Microservices to Use PostgreSQL</p>
+                <!-- <p class="step-title">Cập nhật Connection String in <code>appsettings.json</code></p> -->
+              </div>
+            </div>
+            <div class="step-body">
+                <h6 class="fw-semibold mt-3 mb-1">1a. Open Package Manager Console</h6>
+                <p class="text-muted small mb-2">Cần phải cập nhật tất cả <code>appsettings.json</code> cho <code>StudentService</code>,
+                    <code>TeacherService</code>.
+                </p>
+
+                <p class="text-muted small mb-2">Lấy ví dụ với <code>StudentService</code>, trong ConnectionString, thay thế giá trị của
+                    “DefaultConnection”.</p>
+
+                <p class="text-muted small mb-2">Từ thuộc tính <code>ConnectionString</code> này:</p>
+                
+                <p class="small text-muted">Example (trong StudentService/appsetting.json):</p>
+                <div class="code-wrap">
+                    <div class="code-header">
+                    <span class="code-lang">JSON — appsettings.json (local dev)</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre>
+    <span class="prop">"ConnectionStrings"</span>: {
+        <span class="prop">"DefaultConnection"</span>: <span class="str">"Server=(localdb)\\mssqllocaldb;Database=student-db;Trusted_Connection=True;"</span>
+    }</pre>
+    </div>
+                <p class="text-muted small mb-2">Thay thế thành:</p>
+                
+                <p class="small text-muted">Example (trong StudentService/appsetting.json):</p>
+                <div class="code-wrap">
+                    <div class="code-header">
+                    <span class="code-lang">JSON — appsettings.json (local dev)</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre>
+    <span class="prop">"ConnectionStrings"</span>: {
+        <span class="prop">"DefaultConnection"</span>: <span class="str">"Host=localhost;Port=5432;Database=microservicesdb;Username=postgres;Password=postgres"</span>
+    }</pre>
+                </div>
+
+
+                <p class="text-muted small mb-2">Làm tương tự như vậy với <code>TeacherServer/appseting.json</code></p>
+
+
+                
+                <!-- 1b.  -->
+                 <h6 class="fw-semibold mt-3 mb-1">1b. Cập nhật <code>Program.cs</code> để sử dụng POSTGRESQL</h6>
+                 <p class="text-muted small mb-2">Thay đổi AddDbContect cấu hình trong file</p>
+                 <p class="text-muted small mb-2">Lấy ví dụ cho <code>StudentServer/Program.cs</code></p>
+                 <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">C#</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre>
+<span class="cmt">// Thay thế cái này  </span>
+
+<span class="cmt">//builder.Services.AddDbContext&lt;ApplicationDbContext&gt;(options =>
+//{
+  //options.UseSqlServer(
+   // builder.Configuration.GetConnectionString("DefaultConnection"));
+//});</span>
+builder.Services.<span class="fn">AddDbContext</span>&lt;<span class="tag-c">ApplicationDbContext</span>&gt;(options =&gt;
+    options.<span class="fn">UseNpgsql</span>(
+        builder.Configuration.<span class="fn">GetConnectionString</span>(<span class="str">"DefaultConnection"</span>)
+    )
+);
+</pre>
+              </div>
+               <p class="text-muted small mb-2">Làm tương tự như vậy với <code>TeacherService/Program.cs</code></p>
+                <!-- 1c.  -->
+                 <h6 class="fw-semibold mt-3 mb-1">1c. Migration cho POSTGRESQL</h6>
+                 <p class="small mb-2" style="color:red">Vì đã thay đổi DBMS cho nên folder Migration cũ trong dự án, cần phải xóa trước khi thực hiện bước này. </p>
+                 <p class="text-muted small mb-2">Mở <strong>Package Manager Console</strong> cho mỗi dự án.</p>
+                 <p class="text-muted small mb-2">Các bạn sẽ thay đổi dịch vụ tại <strong>Default project</strong>. Giả sử: Default project đang là
+                <code>StudentService</code> thì nó sẽ cài update migration này cho <code>StudentService</code> mà thôi.
+
+                </p>
+                <p class="text-muted small mb-2">Ví dụ như <strong>Default project:</strong><code>StudentService</code></p>
+                <p class="small text-muted">Example (EF Core 8):</p>
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">Example</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><span class="kw">add-migration</span> newDB</pre>
+                <pre><span class="kw">update-database</span></pre>
+              </div>
+              <p class="text-muted small mb-2">Làm tương tự như vậy với <code>TeacherService</code></p>
+            </div>
+            
+            </div>
+            
+          </div>
+        
+         
+          <!-- #. tạo compose file -->
+        <div class="step-card" id="step#">
+            <div class="step-header">
+              <div class="step-num">#</div>
+              <div>
+                <p class="step-title">Tạo <code>docker-compose.yml</code> File</p>
+                <small class="text-muted">Trong folder root của dự án. </small>
+              </div>
+            </div>
+            <div class="step-body">
+
+              <p>Tạo <code>docker-compose.yml</code> trong <code>AspNetCoreMicroservicesDemo</code> (root
+                folder lấy từ Github).</p>
+
+              <div class="callout callout-info">
+                <i class="bi bi-folder-fill"></i>
+                <div>File location: <code>AspNetCoreMicroservicesDemo/docker-compose.yml</code></div>
+              </div>
+
+              <h6 class="fw-semibold mt-3 mb-1">docker-compose.yml</h6>
+              <div class="code-wrap">
+                <div class="code-header">
+                  <span class="code-lang">YAML</span>
+                  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><span class="prop">version</span><span class="kw">:</span> <span class="str">'3.8'</span>
+
+<span class="prop">services</span><span class="kw">:</span>
+
+  <span class="prop">postgres</span><span class="kw">:</span>
+    <span class="prop">image</span><span class="kw">:</span> postgres<span class="kw">:</span><span class="num">16</span>
+    <span class="prop">container_name</span><span class="kw">:</span> microservices-postgres
+    <span class="prop">restart</span><span class="kw">:</span> always
+    <span class="prop">environment</span><span class="kw">:</span>
+      <span class="prop">POSTGRES_USER</span><span class="kw">:</span> postgres
+      <span class="prop">POSTGRES_PASSWORD</span><span class="kw">:</span> postgres
+      <span class="prop">POSTGRES_DB</span><span class="kw">:</span> microservicesdb
+    <span class="prop">ports</span><span class="kw">:</span>
+      <span class="kw">-</span> <span class="str">"5432:5432"</span>
+    <span class="prop">volumes</span><span class="kw">:</span>
+      <span class="kw">-</span> postgres_data<span class="kw">:</span>/var/lib/postgresql/data
+
+  <span class="prop">studentservice</span><span class="kw">:</span>
+    <span class="prop">build</span><span class="kw">:</span>
+      <span class="prop">context</span><span class="kw">:</span> .
+      <span class="prop">dockerfile</span><span class="kw">:</span> StudentService/Dockerfile
+    <span class="prop">container_name</span><span class="kw">:</span> student-service
+    <span class="prop">ports</span><span class="kw">:</span>
+      <span class="kw">-</span> <span class="str">"5001:80"</span>
+    <span class="prop">environment</span><span class="kw">:</span>
+      <span class="prop">ConnectionStrings__DefaultConnection</span><span class="kw">:</span> <span class="str">"Host=postgres;Port=5432;Database=microservicesdb;Username=postgres;Password=postgres"</span>
+    <span class="prop">depends_on</span><span class="kw">:</span>
+      <span class="kw">-</span> postgres
+
+  <span class="prop">teacherservice</span><span class="kw">:</span>
+    <span class="prop">build</span><span class="kw">:</span>
+      <span class="prop">context</span><span class="kw">:</span> .
+      <span class="prop">dockerfile</span><span class="kw">:</span> TeacherService/Dockerfile
+    <span class="prop">container_name</span><span class="kw">:</span> teacher-service
+    <span class="prop">ports</span><span class="kw">:</span>
+      <span class="kw">-</span> <span class="str">"5002:80"</span>
+    <span class="prop">environment</span><span class="kw">:</span>
+      <span class="prop">ConnectionStrings__DefaultConnection</span><span class="kw">:</span> <span class="str">"Host=postgres;Port=5432;Database=microservicesdb;Username=postgres;Password=postgres"</span>
+    <span class="prop">depends_on</span><span class="kw">:</span>
+      <span class="kw">-</span> postgres
+
+<span class="prop">volumes</span><span class="kw">:</span>
+  <span class="prop">postgres_data</span><span class="kw">:</span></pre>
+              </div>
+
+              <div class="callout callout-tip">
+                <i class="bi bi-lightbulb-fill"></i>
+                <div>The <code>depends_on</code> key ensures PostgreSQL starts before your services. The hostname
+                  <code>postgres</code> inside the connection string refers to the Docker service name, not
+                  <code>localhost</code>.
+                </div>
+              </div>
+            </div>
+          </div>
+         
+
+       
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function copyCode(btn) {
+      const pre = btn.closest('.code-wrap').querySelector('pre');
+      const text = pre.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+      });
+    }
+
+  </script>
+</body>
+
+</html>

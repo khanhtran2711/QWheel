@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ASP.NET Core + Docker Lab Tutorial</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #f8f9fa; }
+    .hero { background: linear-gradient(135deg, #0d6efd, #6610f2); color: white; }
+    pre { background: #212529; color: #f8f9fa; padding: 1rem; border-radius: 0.75rem; overflow-x: auto; }
+    code { color: #d63384; }
+    pre code { color: inherit; }
+    .section-card { border: 0; border-radius: 1rem; box-shadow: 0 0.5rem 1rem rgba(0,0,0,.08); }
+    .toc a { text-decoration: none; }
+    .badge-soft { background: #e7f1ff; color: #0d6efd; }
+    .folder { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; white-space: pre; background:#fff; border:1px solid #dee2e6; border-radius: 0.75rem; padding:1rem; }
+  </style>
+</head>
+<body>
+  <header class="hero py-5 mb-4">
+    <div class="container">
+      <section class="lab-hero">
+  <div class="alert alert-primary mb-0">
+    <strong>Bắt buộc:</strong> BẠN CẦN PHẢI CÓ DỰ ÁN MICROSERVICE ĐÃ PULL THÌ GITHUB VỀ, DỰ ÁN NÀY ĐÃ CHẠY THÀNH CÔNG THÌ MỚI LÀM CÁC BƯỚC TIẾP THEO.
+  </div>
+</section>
+    </div>
+  </header>
+
+  <main class="container pb-5">
+    <div class="row g-4">
+      <div class="col-lg-9">
+          <!-- 1 install postgres to ASP -->
+        <section id="overview" class="card section-card mb-4">
+          <div class="card-body p-4">
+            <h2 class="h3">1. Cài đặt package postgresql trong dự án ASP.NET</h2>
+            <p>Mở <strong>Package Manager Console</strong>để cài package này cho tất cả các dịch vụ gồm: <code>StudentService</code>, <code>TeacherService</code>.</p>
+
+            <p>Các bạn sẽ thay đổi dịch vụ tại <strong>Default project</strong>. Giả sử: Default project đang là <code>StudentService</code> thì nó sẽ cài package này cho <code>StudentService</code> mà thôi.</p>
+
+            <p>Trong lệnh dưới: <code>x.x.x</code> là phiên bản cần cài. Các bạn phải check xem <strong>EntityFrameworkCore</strong> mà bạn đang sử dụng là version nào thì sẽ dùng tương ứng với x đầu tiên. </p>
+            <p>Ví dụ: <strong>EntityFrameworkCore</strong> là <code>8.0.25</code> thì <code>x.x.x</code> sẽ là <code>8.0.0</code>.
+<code>AspNetCoreMicroservicesDemo</code> and two services such as <code>StudentService</code> and <code>TeacherService</code>.</p>
+
+                <p class="small text-muted">Example (EF Core 8):</p>
+            <div class="code-wrap">
+              <div class="code-header">
+                <span class="code-lang">Example</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+              </div>
+              <pre><span class="kw">Install-Package</span> Npgsql.EntityFrameworkCore.PostgreSQL <span class="attr">-Version</span> <span class="num">8.0.0</span></pre>
+            </div>
+          </div>
+        </section>
+
+
+        <section id="overview" class="card section-card mb-4">
+          <div class="card-body p-4">
+            <h2 class="h3">1. Lab overview</h2>
+            <p>This lab demonstrates how to prepare an ASP.NET Core microservice project for PostgreSQL and Docker. The example assumes a solution folder named <code>AspNetCoreMicroservicesDemo</code> and two services such as <code>StudentService</code> and <code>TeacherService</code>.</p>
+            <div class="alert alert-primary mb-0">
+              <strong>Scenario:</strong> You cloned a microservices solution from GitHub. Now you want to install the PostgreSQL provider, configure database access, and run the services together with PostgreSQL in Docker.
+            </div>
+          </div>
+        </section>
+
+        <section id="prerequisites" class="card section-card mb-4">
+          <div class="card-body p-4">
+            <h2 class="h3">2. Prerequisites</h2>
+            <ul>
+              <li>.NET SDK installed</li>
+              <li>Docker Desktop installed and running</li>
+              <li>Visual Studio or Visual Studio Code</li>
+              <li>Basic ASP.NET Core Web API knowledge</li>
+              <li>Your solution already pulled from GitHub</li>
+            </ul>
+            <p class="mb-0"><span class="badge badge-soft rounded-pill">Important</span> The version of <code>Npgsql.EntityFrameworkCore.PostgreSQL</code> should normally match your major EF Core version.</p>
+          </div>
+        </section>
+
+        <section id="structure" class="card section-card mb-4">
+          <div class="card-body p-4">
+            <h2 class="h3">3. Suggested source code structure</h2>
+            <p>Below is a simple structure you can use for this tutorial.</p>
+            <div class="folder">AspNetCoreMicroservicesDemo/
+├── docker-compose.yml
+├── StudentService/
+│   ├── Controllers/
+│   │   └── StudentsController.cs
+│   ├── Data/
+│   │   └── AppDbContext.cs
+│   ├── Models/
+│   │   └── Student.cs
+│   ├── Properties/
+│   ├── appsettings.json
+│   ├── Dockerfile
+│   ├── Program.cs
+│   └── StudentService.csproj
+├── TeacherService/
+│   ├── Controllers/
+│   │   └── TeachersController.cs
+│   ├── Data/
+│   │   └── AppDbContext.cs
+│   ├── Models/
+│   │   └── Teacher.cs
+│   ├── appsettings.json
+│   ├── Dockerfile
+│   ├── Program.cs
+│   └── TeacherService.csproj
+└── AspNetCoreMicroservicesDemo.sln</div>
+          </div>
+        </section>
+
+        <section id="package" class="card section-card mb-4">
+          <div class="card-body p-4">
+            <h2 class="h3">4. Install the PostgreSQL package</h2>
+            <p>Open <strong>Package Manager Console</strong> in Visual Studio. Make sure the <strong>Default project</strong> is set correctly before running the command.</p>
+            <div class="alert alert-warning">
+              If the Default project is <code>StudentService</code>, the package will be installed only for <code>StudentService</code>. Repeat the process for <code>TeacherService</code> if needed.
+            </div>
+            <p>Example command:</p>
+            <pre><code>Install-Package Npgsql.EntityFrameworkCore.PostgreSQL -Version x.x.x</code></pre>
+            <p>Version rule example:</p>
+            <ul>
+              <li>If <code>Microsoft.EntityFrameworkCore</code> is <code>8.0.25</code></li>
+              <li>Then use an Npgsql EF Core package from the <code>8.x.x</code> family</li>
+            </ul>
+            <p class="mb-0">You can also use the .NET CLI:</p>
+            <pre><code>dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL --version 8.0.0</code></pre>
+          </div>
+        </section>
+
+        <section id="code" class="card section-card mb-4">
+          <div class="card-body p-4">
+            <h2 class="h3">5. ASP.NET Core sample code</h2>
+
+            <h3 class="h5 mt-4">5.1 Model: Student.cs</h3>
+            <pre><code>namespace StudentService.Models;
+
+public class Student
+{
+    public int Id { get; set; }
+    public string FullName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+}</code></pre>
+
+            <h3 class="h5 mt-4">5.2 DbContext: AppDbContext.cs</h3>
+            <pre><code>using Microsoft.EntityFrameworkCore;
+using StudentService.Models;
+
+namespace StudentService.Data;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options) : base(options)
+    {
+    }
+
+    public DbSet&lt;Student&gt; Students =&gt; Set&lt;Student&gt;();
+}</code></pre>
+
+            <h3 class="h5 mt-4">5.3 Program.cs</h3>
+            <pre><code>using Microsoft.EntityFrameworkCore;
+using StudentService.Data;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();</code></pre>
+
+            <h3 class="h5 mt-4">5.4 Controller: StudentsController.cs</h3>
+            <pre><code>using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using StudentService.Data;
+using StudentService.Models;
+
+namespace StudentService.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class StudentsController : ControllerBase
+{
+    private readonly AppDbContext _context;
+
+    public StudentsController(AppDbContext context)
+    {
+        _context = context;
+    }
+
+    [HttpGet]
+    public async Task&lt;ActionResult&lt;IEnumerable&lt;Student&gt;&gt;&gt; GetAll()
+    {
+        return await _context.Students.ToListAsync();
+    }
+
+    [HttpPost]
+    public async Task&lt;ActionResult&lt;Student&gt;&gt; Create(Student student)
+    {
+        _context.Students.Add(student);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetAll), new { id = student.Id }, student);
+    }
+}</code></pre>
+
+            <h3 class="h5 mt-4">5.5 appsettings.json</h3>
+            <pre><code>{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=postgresdb;Port=5432;Database=studentdb;Username=postgres;Password=postgres123"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}</code></pre>
+
+            <h3 class="h5 mt-4">5.6 Create migration and update database</h3>
+            <pre><code>dotnet ef migrations add InitialCreate
+
+dotnet ef database update</code></pre>
+            <p class="mb-0">When using containers, many teams prefer running migrations on startup or through a separate migration step.</p>
+          </div>
+        </section>
+
+        <section id="dockerfile" class="card section-card mb-4">
+          <div class="card-body p-4">
+            <h2 class="h3">6. Dockerfile for StudentService</h2>
+            <p>Create a <code>Dockerfile</code> inside each service project.</p>
+            <pre><code>FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY ["StudentService/StudentService.csproj", "StudentService/"]
+RUN dotnet restore "StudentService/StudentService.csproj"
+COPY . .
+WORKDIR "/src/StudentService"
+RUN dotnet publish "StudentService.csproj" -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "StudentService.dll"]</code></pre>
+            <p class="mb-0">Use the same idea for <code>TeacherService</code>, changing the project paths and DLL name.</p>
+          </div>
+        </section>
+
+        <section id="compose" class="card section-card mb-4">
+          <div class="card-body p-4">
+            <h2 class="h3">7. Create docker-compose.yml</h2>
+            <p>Create this file in the <code>AspNetCoreMicroservicesDemo</code> root folder.</p>
+            <pre><code>version: '3.9'
+
+services:
+  postgresdb:
+    image: postgres:16
+    container_name: postgresdb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: studentdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  studentservice:
+    build:
+      context: .
+      dockerfile: StudentService/Dockerfile
+    container_name: studentservice
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+    ports:
+      - "5001:8080"
+    depends_on:
+      - postgresdb
+
+  teacherservice:
+    build:
+      context: .
+      dockerfile: TeacherService/Dockerfile
+    container_name: teacherservice
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+    ports:
+      - "5002:8080"
+    depends_on:
+      - postgresdb
+
+volumes:
+  postgres_data:</code></pre>
+            <div class="alert alert-info mb-0">
+              Inside Docker Compose, service names such as <code>postgresdb</code> act like host names on the internal Docker network.
+            </div>
+          </div>
+        </section>
+
+        <section id="run" class="card section-card mb-4">
+          <div class="card-body p-4">
+            <h2 class="h3">8. Run the lab</h2>
+            <ol>
+              <li>Open a terminal in the solution root folder.</li>
+              <li>Build and start the containers:</li>
+            </ol>
+            <pre><code>docker compose up --build</code></pre>
+            <ol start="3">
+              <li>Open the API endpoints in your browser or Postman.</li>
+            </ol>
+            <pre><code>http://localhost:5001/swagger
+http://localhost:5002/swagger</code></pre>
+            <ol start="4">
+              <li>Stop the containers when finished:</li>
+            </ol>
+            <pre><code>docker compose down</code></pre>
+          </div>
+        </section>
+
+        <section id="verify" class="card section-card mb-4">
+          <div class="card-body p-4">
+            <h2 class="h3">9. How to verify everything works</h2>
+            <ul>
+              <li>Check whether the PostgreSQL container is running.</li>
+              <li>Open Swagger for each service.</li>
+              <li>Send a <code>POST</code> request to create a student.</li>
+              <li>Send a <code>GET</code> request to read the inserted data.</li>
+            </ul>
+            <pre><code>docker ps
+
+docker compose logs studentservice
+
+docker compose logs postgresdb</code></pre>
+          </div>
+        </section>
+
+        <section id="tasks" class="card section-card mb-4">
+          <div class="card-body p-4">
+            <h2 class="h3">10. Practice tasks for students</h2>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="border rounded-4 p-3 h-100 bg-light">
+                  <h3 class="h6">Task 1</h3>
+                  <p class="mb-0">Add a <code>DateOfBirth</code> field to the <code>Student</code> model, then create and apply a new migration.</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="border rounded-4 p-3 h-100 bg-light">
+                  <h3 class="h6">Task 2</h3>
+                  <p class="mb-0">Create a <code>Teacher</code> model and build a matching API controller in <code>TeacherService</code>.</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="border rounded-4 p-3 h-100 bg-light">
+                  <h3 class="h6">Task 3</h3>
+                  <p class="mb-0">Change database credentials in <code>docker-compose.yml</code> and update the connection string correctly.</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="border rounded-4 p-3 h-100 bg-light">
+                  <h3 class="h6">Task 4</h3>
+                  <p class="mb-0">Add a Docker health check for PostgreSQL and delay API startup until the database becomes ready.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="card-body p-4">
+            <h2 class="h3">Teaching notes</h2>
+            <ul class="mb-0">
+              <li>Explain the difference between <strong>host machine ports</strong> and <strong>container ports</strong>.</li>
+              <li>Show why <code>postgresdb</code> works as a host name inside containers but not from the browser on the host machine.</li>
+              <li>Remind students that each project needs its own NuGet package installation.</li>
+              <li>Discuss why package version compatibility matters for EF Core providers.</li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
