@@ -312,7 +312,7 @@ from Crypto.Util.Padding import pad, unpad
 key = b"aaaabbbbccccdddd"
 cipher = AES.new(key, AES.MODE_ECB)
 
-with open("./Downloads/tux.bmp", "rb") as f:
+with open("./Downloads/tux.png", "rb") as f:
         clear = f.read()
         clear_trimmed = clear[54:-12]
 	  padded_text = pad(clear_trimmed, AES.block_size)
@@ -337,7 +337,7 @@ key = b"aaaabbbbccccdddd"
 iv = b"1111222233334444"
 cipher = AES.new(key, AES.MODE_CBC, iv)
 
-with open("./Downloads/tux.bmp", "rb") as f:
+with open("./Downloads/tux.png", "rb") as f:
         clear = f.read()
         clear_trimmed = clear[54:-12]
         padded_text = pad(clear_trimmed, AES.block_size)
@@ -346,7 +346,7 @@ with open("./Downloads/tux.bmp", "rb") as f:
 with open("./Downloads/tux_cbc.bmp", "wb") as f:
         f.write(ciphertext)</code></pre>
 
-      <h3>Decrypt <code class="inline">secret.png</code></h3>
+      <h3>Decrypt <code class="inline">secret.bmp</code></h3>
       <p>Write code to decrypt the <code class="inline">secret.png</code> file that has been encrypted according to the AES CBC algorithm. Given that the encryption key is <code class="inline">"aaaabbbbccccdddd"</code>.</p>
       
       <h3>a. Find the IV:</h3>
