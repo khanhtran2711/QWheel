@@ -1,0 +1,21 @@
+nwdiag {
+  network physical {
+    address = "10.66.20.0/22";
+
+    macos [address = "10.66.20.144/22", description = "The real machine\nmacOS"];
+    pfsense_wan [address = "10.66.21.91/22", description = "pfSense WAN"];
+  }
+
+  network lan {
+    address = "192.168.1.0/24";
+
+    pfsense_lan [address = "192.168.1.1/24", description = "pfSense LAN\nGateway"];
+    kali [address = "192.168.1.100/24", description = "Kali VM"];
+  }
+
+  group {
+    description = "pfSense VM";
+    pfsense_wan;
+    pfsense_lan;
+  }
+}
